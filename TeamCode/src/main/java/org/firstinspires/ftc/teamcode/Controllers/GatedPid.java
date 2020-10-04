@@ -1,8 +1,9 @@
 package org.firstinspires.ftc.teamcode.Controllers;
 
 /*
-This is a pretty self-explanatory PID controller. sumLimit is the limit of the error sum, and thus constrains the I-term.
- */
+This is a gated PID controller. If the error is over threshold, the output of this controller is
+constant, if error is under threshold, then it switches to a PID
+*/
 
 public class GatedPid extends Controller {
 
@@ -65,5 +66,7 @@ public class GatedPid extends Controller {
         }else if(correction < 0 && correction > -correctLowLimit){
             correction = -correctLowLimit;
         }
+
     }
+
 }

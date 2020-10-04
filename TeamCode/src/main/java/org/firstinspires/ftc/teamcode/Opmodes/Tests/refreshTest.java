@@ -3,9 +3,7 @@ package org.firstinspires.ftc.teamcode.Opmodes.Tests;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
 import org.firstinspires.ftc.teamcode.Movement.Localization.OdometerIMU2W;
-import org.firstinspires.ftc.teamcode.Movement.Localization.OdometerKIMU2W;
 import org.firstinspires.ftc.teamcode.Movement.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Movement.Movement;
 import org.firstinspires.ftc.teamcode.Utility.RobotHardware;
@@ -25,6 +23,7 @@ public class refreshTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+
         initialize();
         waitForStart();
         timer.start();
@@ -50,6 +49,7 @@ public class refreshTest extends LinearOpMode {
     }
 
     private void initialize(){
+
         hardware.hardwareMap(hardwareMap);
 
         odometer = new OdometerIMU2W(this, hardware);
@@ -65,4 +65,5 @@ public class refreshTest extends LinearOpMode {
         telemetry.update();
 
     }
+
 }

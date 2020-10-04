@@ -13,10 +13,14 @@ public class MathFunctions {
                                                                double lineX2, double lineY2){
         // Make sure the points don't exactly line up so the slopes work
         if(Math.abs(lineY1- lineY2) < 0.003){
+
             lineY1 = lineY2 + 0.003;
+
         }
         if(Math.abs(lineX1- lineX2) < 0.003){
+
             lineX1 = lineX2 + 0.003;
+
         }
 
         // Calculate the slope of the line
@@ -57,7 +61,9 @@ public class MathFunctions {
             double maxX = lineX1 > lineX2 ? lineX1 : lineX2;
 
             if(xRoot1 > minX && xRoot1 < maxX){
+
                 allPoints.add(new RobotPoint(xRoot1, yRoot1, 0, 0));
+
             }
 
             // Do the same for the other root
@@ -70,13 +76,16 @@ public class MathFunctions {
 
             // Make sure it was within range of the segment
             if(xRoot2 > minX && xRoot2 < maxX){
+
                 allPoints.add(new RobotPoint(xRoot2, yRoot2, 0, 0));
+
             }
 
         }catch(Exception e){
             // There are no real roots, and therefore no intersections
         }
         return allPoints;
+
     }
 
     public static double sine(double theta){
@@ -86,4 +95,11 @@ public class MathFunctions {
     public static double cosine(double theta){
         return cos(toRadians(theta));
     }
+
+    public static double calculateLaunchAngle(double distance) {
+
+        return 0; // I made some calculations but then decided a lookup table would be better
+
+    }
+
 }

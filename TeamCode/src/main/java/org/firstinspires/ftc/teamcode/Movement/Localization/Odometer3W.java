@@ -31,6 +31,7 @@ public class Odometer3W extends Odometer{
     private double horizontalOffset = 6.24;
     private double verticalOffset = 16.1;
 
+    // These variables allow you to set the direction of the encoders regardless of any reversing going on elsewhere
     private double rightVerticalDirection = 1;
     private double leftVerticalDirection = 1;
     private double horizontalDirection = 1;

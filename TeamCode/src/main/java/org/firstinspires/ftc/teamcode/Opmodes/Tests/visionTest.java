@@ -1,21 +1,21 @@
-package org.firstinspires.ftc.teamcode.CustomCV;
+package org.firstinspires.ftc.teamcode.Opmodes.Tests;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
+import org.firstinspires.ftc.teamcode.CustomCV.BluePipeline;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 
-@TeleOp(name="Vision Test", group = "Linear Opmode")
+@Autonomous(name="Vision Test", group="Testing")
 
-public class VisionTest extends LinearOpMode {
+public class visionTest extends LinearOpMode {
 
     private OpenCvCamera phoneCam;
-    private MainPipeline pipeline;
+    private BluePipeline pipeline;
 
     private void initialize(){
+
         telemetry.addData("Status: ", "Initializing");
         telemetry.update();
 
@@ -27,7 +27,7 @@ public class VisionTest extends LinearOpMode {
         phoneCam = new OpenCvInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
         phoneCam.openCameraDevice();
 
-        pipeline = new MainPipeline();
+        pipeline = new BluePipeline();
 
         phoneCam.setPipeline(pipeline);
 
@@ -38,6 +38,7 @@ public class VisionTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+
         initialize();
         waitForStart();
         telemetry.addData("Status: ", "Running");
@@ -51,6 +52,9 @@ public class VisionTest extends LinearOpMode {
             telemetry.addData("location", pipeline.location);
             telemetry.addData("type", pipeline.location.getClass());
             telemetry.update();
+
         }
+
     }
+
 }

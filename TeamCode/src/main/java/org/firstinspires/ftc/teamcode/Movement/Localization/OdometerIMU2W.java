@@ -41,7 +41,7 @@ public class OdometerIMU2W extends Odometer{
     private double horizontalOffset = -6.24;
     private double verticalOffset = 16.1;
 
-    //Directions without using intake
+    // These variables allow you to set the direction of the encoders regardless of any reversing going on elsewhere
     private double verticalDirection = -1;
     private double horizontalDirection = 1;
 

@@ -13,6 +13,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 public class OdometerIMU3W extends Odometer{
 
+    // ngl this is kinda retarded
+
     /* Top-Down View of The Bottom of a Robot
 
     /===================\
