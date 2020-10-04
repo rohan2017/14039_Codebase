@@ -27,10 +27,10 @@ public class RobotHardware {
         leftBack = hardwareMap.dcMotor.get("driveBackLeft");
         rightBack = hardwareMap.dcMotor.get("driveBackRight");
         //Intake
-        intake = hardwareMap.dcMotor.get("intakeFront");
+        //intake = hardwareMap.dcMotor.get("intakeFront");
         //Shooter
-        shooter1 = hardwareMap.dcMotor.get("shooterFront");
-        shooter2 = hardwareMap.dcMotor.get("shooterRear");
+        //shooter1 = hardwareMap.dcMotor.get("shooterFront");
+        //shooter2 = hardwareMap.dcMotor.get("shooterRear");
         //IMU
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters Params = new BNO055IMU.Parameters();
