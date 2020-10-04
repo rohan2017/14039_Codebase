@@ -1,5 +1,5 @@
 ## TeamCode Module
 
 TODO:
-Add radius and velocity into the points, and implement smooth transitions between points of
-heading, radius, and velocity.
+Add wrapper classes for hardware and add compatibility in the subsystem classes.
+Get main target finding CV pipeline ported into easyOpenCV.
