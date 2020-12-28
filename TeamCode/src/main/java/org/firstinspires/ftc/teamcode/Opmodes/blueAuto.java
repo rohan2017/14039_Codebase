@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.Opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import org.firstinspires.ftc.teamcode.CustomCV.BluePipeline;
 import org.firstinspires.ftc.teamcode.CustomCV.RedPipeline;
 import org.firstinspires.ftc.teamcode.HardwareSystems.ActionHandler;
 import org.firstinspires.ftc.teamcode.Movement.Localization.OdometerIMU2W;
@@ -25,7 +27,7 @@ public class blueAuto extends LinearOpMode {
     private ActionHandler handler;
 
     // Vision
-    private RedPipeline pipeline;
+    private BluePipeline pipeline;
     private OpenCvCamera phoneCam;
 
     @Override
@@ -50,7 +52,7 @@ public class blueAuto extends LinearOpMode {
         phoneCam = new OpenCvInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
         phoneCam.openCameraDevice();
 
-        pipeline = new RedPipeline();
+        pipeline = new BluePipeline();
         phoneCam.setPipeline(pipeline);
         phoneCam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
 

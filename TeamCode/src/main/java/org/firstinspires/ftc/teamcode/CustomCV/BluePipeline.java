@@ -22,10 +22,10 @@ public class BluePipeline extends OpenCvPipeline {
 
     @Override
     public Mat processFrame(Mat frame) {
-        Mat lower_res = new Mat();
-        Imgproc.resize(frame, lower_res, new Size(500,200));
+        //Mat lower_res = new Mat();
+        //Imgproc.resize(frame, lower_res, new Size(500,200));
 
-        Mat workingMat = lower_res.clone();
+        Mat workingMat = frame.clone();
 
         Imgproc.cvtColor(workingMat, workingMat, Imgproc.COLOR_RGB2HSV_FULL);
         Imgproc.GaussianBlur(workingMat, workingMat, new Size(5,5), 0);
@@ -80,7 +80,7 @@ public class BluePipeline extends OpenCvPipeline {
                             targetY = 0.1*blue_centerY + 0.9*white_centerY;
                             Point center = new Point((int)targetX, (int)targetY);
                             Scalar color = new Scalar(255, 255, 255);
-                            Imgproc.circle(lower_res, center, 10, color, 5);
+                            Imgproc.circle(frame, center, 10, color, 5);
 
                         }
 
@@ -94,7 +94,7 @@ public class BluePipeline extends OpenCvPipeline {
         }
 
 
-        return lower_res;
+        return frame;
 
     }
 
