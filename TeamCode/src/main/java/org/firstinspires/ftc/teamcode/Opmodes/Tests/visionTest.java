@@ -49,8 +49,6 @@ public class visionTest extends LinearOpMode {
         while (opModeIsActive()) {
 
             telemetry.addData("FPS", String.format("%.2f", phoneCam.getFps()));
-            telemetry.addData("location", pipeline.location);
-            telemetry.addData("type", pipeline.location.getClass());
             telemetry.update();
 
         }

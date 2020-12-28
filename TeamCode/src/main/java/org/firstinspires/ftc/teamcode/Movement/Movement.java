@@ -148,7 +148,6 @@ public class Movement {
 
     }
 
-
     public void moveToPointPD(RobotPoint targetPoint, double switchThresh, double arrivedThresh) {
 
         GatedPid orient = new GatedPid(15, 0.3,0.006,0,0.02,0, 0.4, 0);
@@ -279,6 +278,7 @@ public class Movement {
         drivebase.freeze();
 
     }
+
     public void moveToPointPDBlue(RobotPoint targetPoint, double switchThresh, double arrivedThresh) {
 
         GatedPid orient = new GatedPid(10, 0.3,0.008,0,0.023,0, 0.4, 0.05);
@@ -368,7 +368,6 @@ public class Movement {
 
     }
 
-
     public void moveToPointConstantsBlue(RobotPoint targetPoint, double speedFar, double speedNear, double switchThresh, double arrivedThresh) {
 
         GatedPid orient = new GatedPid(30, 0.3,0.009,0,0.023,0, 0.4, 0.05);
@@ -412,9 +411,6 @@ public class Movement {
 
     }
 
-
-
-
     public void deadReckon(double xVel, double yVel, double hVel, double millis){
         double endTime = timer.getTimeMillis() + millis;
         while(opMode.opModeIsActive() && timer.getTimeMillis() < endTime){
@@ -431,9 +427,5 @@ public class Movement {
             }
         }
     }
-
-
-
-
 
 }

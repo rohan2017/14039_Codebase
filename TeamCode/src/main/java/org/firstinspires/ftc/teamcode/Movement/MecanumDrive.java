@@ -24,8 +24,9 @@ public class MecanumDrive extends Drivebase {
         rb = 0;
 
         reverseMotors();
-        setRunMode("withEncoder");
-        setPowerBehavior("brake");
+        resetDriveEncoders();
+        setRunMode("withoutEncoder");
+        setPowerBehavior("coast");
     }
 
     @Override
@@ -106,10 +107,19 @@ public class MecanumDrive extends Drivebase {
     private void reverseMotors(){
 
         // Reverse the necessary motors so that when positive power is set to all four, the robot moves forward
-        hardware.rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        hardware.rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
         hardware.leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
         hardware.leftBack.setDirection(DcMotorSimple.Direction.FORWARD);
         hardware.rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+
+    }
+
+    public void testMotorDirections() { //Robot moves forwards
+
+        lf = 0.2;
+        rf = 0.2;
+        lb = 0.2;
+        rb = 0.2;
 
     }
 

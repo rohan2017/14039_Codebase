@@ -15,9 +15,6 @@ public class RobotHardware {
     public BNO055IMU imu;
     //Intake Motors
     public DcMotor intake;
-    //Shooter
-    public DcMotor shooter1;
-    public DcMotor shooter2;
 
     public void hardwareMap(HardwareMap hardwareMap) {
 
@@ -26,11 +23,7 @@ public class RobotHardware {
         leftFront = hardwareMap.dcMotor.get("driveFrontLeft");
         leftBack = hardwareMap.dcMotor.get("driveBackLeft");
         rightBack = hardwareMap.dcMotor.get("driveBackRight");
-        //Intake
-        //intake = hardwareMap.dcMotor.get("intakeFront");
-        //Shooter
-        //shooter1 = hardwareMap.dcMotor.get("shooterFront");
-        //shooter2 = hardwareMap.dcMotor.get("shooterRear");
+
         //IMU
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters Params = new BNO055IMU.Parameters();
@@ -54,5 +47,3 @@ public class RobotHardware {
     }
 
 }
-
-// TODO: Add new "wrapper" classes for basic hardware and add compatibility.

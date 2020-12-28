@@ -66,8 +66,8 @@ public class OdometerIMU2W extends Odometer{
     public OdometerIMU2W(LinearOpMode opMode, RobotHardware hardware){
 
         this.opMode = opMode;
-        this.verticalEncoder = hardware.intakeLeft;
-        this.horizontalEncoder = hardware.intakeRight;
+        this.verticalEncoder = hardware.leftFront;
+        this.horizontalEncoder = hardware.rightFront;
         this.imu = hardware.imu;
 
     }
