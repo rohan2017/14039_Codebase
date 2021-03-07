@@ -107,7 +107,7 @@ public class MecanumDrive extends Drivebase {
     private void reverseMotors(){
 
         // Reverse the necessary motors so that when positive power is set to all four, the robot moves forward
-        hardware.rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
+        hardware.rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         hardware.leftFront.setDirection(DcMotorSimple.Direction.FORWARD);
         hardware.leftBack.setDirection(DcMotorSimple.Direction.FORWARD);
         hardware.rightBack.setDirection(DcMotorSimple.Direction.REVERSE);

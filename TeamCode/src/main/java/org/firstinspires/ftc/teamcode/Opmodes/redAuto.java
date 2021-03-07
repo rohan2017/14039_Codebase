@@ -7,12 +7,15 @@ import org.firstinspires.ftc.teamcode.CustomCV.BluePipeline;
 import org.firstinspires.ftc.teamcode.HardwareSystems.ActionHandler;
 import org.firstinspires.ftc.teamcode.Movement.Localization.OdometerIMU2W;
 import org.firstinspires.ftc.teamcode.Movement.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Movement.MotionPlanning.RobotPoint;
 import org.firstinspires.ftc.teamcode.Movement.Movement;
 import org.firstinspires.ftc.teamcode.Utility.RobotHardware;
 import org.firstinspires.ftc.teamcode.Utility.Timer;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
+
+import java.sql.Driver;
 
 @Autonomous(name="Red Auto", group="Auto")
 public class redAuto extends LinearOpMode {
@@ -39,6 +42,7 @@ public class redAuto extends LinearOpMode {
         telemetry.addData("status", "running");
         telemetry.update();
 
+        movement.moveToPointPD(new RobotPoint(40,40 ,0,0),20,2.5);
     }
 
     private void initialize(){
@@ -46,7 +50,7 @@ public class redAuto extends LinearOpMode {
         hardware.hardwareMap(hardwareMap);
 
         // CV
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        /* int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
 
         phoneCam = new OpenCvInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
         phoneCam.openCameraDevice();
@@ -54,6 +58,7 @@ public class redAuto extends LinearOpMode {
         pipeline = new BluePipeline();
         phoneCam.setPipeline(pipeline);
         phoneCam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+         */
 
         drivetrain = new MecanumDrive(this, hardware);
         odometer = new OdometerIMU2W(this, hardware);
@@ -70,5 +75,7 @@ public class redAuto extends LinearOpMode {
         telemetry.update();
 
     }
+
+
 
 }

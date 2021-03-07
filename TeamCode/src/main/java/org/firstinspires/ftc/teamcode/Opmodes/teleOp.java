@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
+import org.firstinspires.ftc.teamcode.Movement.Localization.OdometerIMU2W;
 import org.firstinspires.ftc.teamcode.Movement.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Utility.RobotHardware;
 
@@ -14,12 +15,15 @@ public class teleOp extends LinearOpMode {
     // Declare OpMode members.
     private RobotHardware hardware = new RobotHardware();
     private MecanumDrive drivetrain;
+    private OdometerIMU2W odometer;
 
     private void initialize() {
 
         hardware.hardwareMap(hardwareMap);
         drivetrain = new MecanumDrive(this, hardware);
+        odometer = new OdometerIMU2W(this, hardware);
         drivetrain.initialize();
+        odometer.initialize();
 
         telemetry.addData("Status", "Initialized - Welcome, Operators");
         telemetry.update();

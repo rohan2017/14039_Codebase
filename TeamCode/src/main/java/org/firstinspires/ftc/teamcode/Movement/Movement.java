@@ -138,7 +138,54 @@ public class Movement {
 
             endCondition = (distance < arrivedThresh) && orient.error < 2;
 
-            doActions(targetPoint);
+          //  doActions(targetPoint);
+
+            odometer.update();
+
+        }while(!endCondition && opMode.opModeIsActive());
+
+        drivebase.freeze();
+
+    }
+
+    public void goToSpot(RobotPoint targetPoint, double speedFar, double speedNear, double switchThresh, double arrivedThresh) {
+
+        //GatedPid orient = new GatedPid(10, 0.3,0.009,0,0.023,0, 0.4, 0.05);
+
+        double xDist, yDist, distance, heading;
+        double targSpeed, scale;
+        double targVX, targVY, hCorrect;
+        boolean endCondition;
+
+
+        do {
+
+            xDist = targetPoint.x - odometer.x;
+            yDist = targetPoint.y - odometer.y;
+            distance = Math.hypot(xDist, yDist);
+            heading = odometer.heading;
+
+            // Verified ^
+
+            if(distance < switchThresh){
+                targSpeed = speedNear;
+            }else{
+                targSpeed = speedFar;
+            }
+
+            scale = targSpeed / distance;
+
+            targVX = xDist * scale;
+            targVY = yDist * scale;
+
+           // orient.update(targetPoint.heading, heading);
+           // hCorrect = orient.correction;
+
+            setGlobalVelocity(targVX, targVY, 0);
+
+            endCondition = (distance < arrivedThresh);
+
+            //  doActions(targetPoint);
 
             odometer.update();
 
@@ -150,7 +197,7 @@ public class Movement {
 
     public void moveToPointPD(RobotPoint targetPoint, double switchThresh, double arrivedThresh) {
 
-        GatedPid orient = new GatedPid(15, 0.3,0.006,0,0.02,0, 0.4, 0);
+        GatedPid orient = new GatedPid(15, 0.2,0.006,0,0.02,0, 0.3, 0);
 
         double xDist, yDist, distance, heading;
         double targSpeed, scale;
@@ -313,7 +360,7 @@ public class Movement {
 
             endCondition = (distance < arrivedThresh) && orient.error < 3; //can be changed
 
-            doActions(targetPoint);
+           // doActions(targetPoint);
 
             odometer.update();
 

@@ -1,10 +1,14 @@
 package org.firstinspires.ftc.teamcode.Movement.Localization;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Utility.RobotHardware;
 
 public class Odometer3W extends Odometer{
+
+    private LinearOpMode opMode;
+    private RobotHardware hardware;
 
     /* Top-Down View of The Bottom of a Robot
 
@@ -28,13 +32,13 @@ public class Odometer3W extends Odometer{
     Odometer measurements can be in whatever units you want, as long as you use the same units for every constant
     */
 
-    private double horizontalOffset = 6.24;
-    private double verticalOffset = 16.1;
+    private double horizontalOffset = 35.5/2;
+    private double verticalOffset = -7.5;
 
     // These variables allow you to set the direction of the encoders regardless of any reversing going on elsewhere
     private double rightVerticalDirection = 1;
     private double leftVerticalDirection = 1;
-    private double horizontalDirection = 1;
+    private double horizontalDirection = -1;
 
     // Encoder Objects
     private DcMotor leftVerticalEncoder, rightVerticalEncoder, horizontalEncoder;
@@ -52,19 +56,18 @@ public class Odometer3W extends Odometer{
     private double[] totalRelativeMovement = {0, 0};
     private double[] totalPositionChange = {0, 0};
 
-    public Odometer3W(RobotHardware hardware){
+    public Odometer3W(LinearOpMode opMode, RobotHardware robothardware){
 
-        this.leftVerticalEncoder = hardware.leftBack;
+        this.opMode = opMode;
+        this.hardware = robothardware;
+        this.leftVerticalEncoder = hardware.leftFront;
         this.rightVerticalEncoder = hardware.rightFront;
-        this.horizontalEncoder = hardware.rightBack;
+        this.horizontalEncoder = hardware.leftBack;
 
     }
 
     @Override
     public void initialize(){
-        leftVerticalEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightVerticalEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        horizontalEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         lastLeftVertical = 0;
         lastRightVertical = 0;
@@ -75,72 +78,73 @@ public class Odometer3W extends Odometer{
 
     @Override
     public void update(){
+        if(opMode.opModeIsActive()) {
 
-        leftVertical = leftVerticalEncoder.getCurrentPosition() * ticksToDistance * leftVerticalDirection;
-        rightVertical = rightVerticalEncoder.getCurrentPosition() * ticksToDistance * rightVerticalDirection;
-        horizontal = horizontalEncoder.getCurrentPosition() * ticksToDistance * horizontalDirection;
+            leftVertical = leftVerticalEncoder.getCurrentPosition() * ticksToDistance * leftVerticalDirection;
+            rightVertical = rightVerticalEncoder.getCurrentPosition() * ticksToDistance * rightVerticalDirection;
+            horizontal = horizontalEncoder.getCurrentPosition() * ticksToDistance * horizontalDirection;
 
-        leftVerticalChange = leftVertical - lastLeftVertical;
-        rightVerticalChange = rightVertical - lastRightVertical;
-        horizontalChange = horizontal - lastHorizontal;
+            leftVerticalChange = leftVertical - lastLeftVertical;
+            rightVerticalChange = rightVertical - lastRightVertical;
+            horizontalChange = horizontal - lastHorizontal;
 
-        headingChange = (rightVerticalChange - leftVerticalChange)/2/verticalOffset;
+            headingChange = (rightVerticalChange - leftVerticalChange)/2/horizontalOffset;
 
-        headingRadians += headingChange;
+            headingRadians += headingChange;
 
-        // Calculating the position-change-vector from two vertical encoders
-        centerArc = (leftVerticalChange + rightVerticalChange) / 2;
+            // Calculating the position-change-vector from two vertical encoders
+            centerArc = (leftVerticalChange + rightVerticalChange) / 2;
 
-        if(headingChange == 0) { // Robot has gone straight/not moved
+            if(headingChange == 0) { // Robot has gone straight/not moved
 
-            positionChangeVertical[0] = 0;
-            positionChangeVertical[1] = centerArc;
+                positionChangeVertical[0] = 0;
+                positionChangeVertical[1] = centerArc;
 
-        }else if(Math.abs(rightVerticalChange) < Math.abs(leftVerticalChange)){ //Left encoder is on inside of the turn
+            }else if(Math.abs(rightVerticalChange) < Math.abs(leftVerticalChange)){ //Left encoder is on inside of the turn
 
-            turnRadius = centerArc/headingChange; //Always positive
+                turnRadius = centerArc/headingChange; //Always positive
 
-            positionChangeVertical[0] = turnRadius - Math.cos(headingChange) * turnRadius;
-            positionChangeVertical[1] = Math.sin(headingChange) * turnRadius;
+                positionChangeVertical[0] = turnRadius - Math.cos(headingChange) * turnRadius;
+                positionChangeVertical[1] = Math.sin(headingChange) * turnRadius;
 
-        }else{ //Right encoder is on inside of the turn
+            }else{ //Right encoder is on inside of the turn
 
-            turnRadius = centerArc/-headingChange; //Always positive
+                turnRadius = centerArc/-headingChange; //Always positive
 
-            positionChangeVertical[0] = turnRadius - Math.cos(-headingChange) * turnRadius;
-            positionChangeVertical[1] = Math.sin(-headingChange) * turnRadius;
+                positionChangeVertical[0] = turnRadius - Math.cos(-headingChange) * turnRadius;
+                positionChangeVertical[1] = Math.sin(-headingChange) * turnRadius;
 
+            }
+
+            //Calculating the position-change-vector from horizontal encoder
+            horizontalAdjust = verticalOffset * headingChange;
+            horizontalExtra = horizontalChange - horizontalAdjust;
+
+            positionChangeHorizontal[0] = Math.cos(headingChange) * horizontalExtra;
+            positionChangeHorizontal[1] = Math.sin(headingChange) * horizontalExtra;
+
+
+            //Add the two vectors together
+            totalRelativeMovement[0] = positionChangeVertical[0] + positionChangeHorizontal[0];
+            totalRelativeMovement[1] = positionChangeVertical[1] + positionChangeHorizontal[1];
+
+            //Rotate the vector
+            totalPositionChange[0] = totalRelativeMovement[0] * Math.cos(lastHeadingRadians) - totalRelativeMovement[1] * Math.sin(lastHeadingRadians);
+            totalPositionChange[1] = totalRelativeMovement[0] * Math.sin(lastHeadingRadians) + totalRelativeMovement[1] * Math.cos(lastHeadingRadians);
+
+            x = lastX + totalPositionChange[0];
+            y = lastY + totalPositionChange[1];
+
+            lastX = x;
+            lastY = y;
+            lastHeadingRadians = headingRadians;
+
+            lastLeftVertical = leftVertical;
+            lastRightVertical = rightVertical;
+            lastHorizontal = horizontal;
+
+            heading = Math.toDegrees(headingRadians);
         }
-
-        //Calculating the position-change-vector from horizontal encoder
-        horizontalAdjust = horizontalOffset * headingChange;
-        horizontalExtra = horizontalChange - horizontalAdjust;
-
-        positionChangeHorizontal[0] = Math.cos(headingChange) * horizontalExtra;
-        positionChangeHorizontal[1] = Math.sin(headingChange) * horizontalExtra;
-
-
-        //Add the two vectors together
-        totalRelativeMovement[0] = positionChangeVertical[0] + positionChangeHorizontal[0];
-        totalRelativeMovement[1] = positionChangeVertical[1] + positionChangeHorizontal[1];
-
-        //Rotate the vector
-        totalPositionChange[0] = totalRelativeMovement[0] * Math.cos(lastHeadingRadians) - totalRelativeMovement[1] * Math.sin(lastHeadingRadians);
-        totalPositionChange[1] = totalRelativeMovement[0] * Math.sin(lastHeadingRadians) + totalRelativeMovement[1] * Math.cos(lastHeadingRadians);
-
-        x = lastX + totalPositionChange[0];
-        y = lastY + totalPositionChange[1];
-
-        lastX = x;
-        lastY = y;
-        lastHeadingRadians = headingRadians;
-
-        lastLeftVertical = leftVertical;
-        lastRightVertical = rightVertical;
-        lastHorizontal = horizontal;
-
-        heading = Math.toDegrees(headingRadians);
-
     }
 
     // Utility Methods

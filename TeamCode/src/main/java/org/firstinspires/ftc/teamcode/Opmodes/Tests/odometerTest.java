@@ -2,7 +2,11 @@ package org.firstinspires.ftc.teamcode.Opmodes.Tests;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.util.Hardware;
+
 import org.firstinspires.ftc.teamcode.Movement.Localization.Odometer3W;
+import org.firstinspires.ftc.teamcode.Movement.Localization.OdometerIMU2W;
 import org.firstinspires.ftc.teamcode.Movement.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Movement.Movement;
 import org.firstinspires.ftc.teamcode.Utility.RobotHardware;
@@ -14,7 +18,7 @@ public class odometerTest extends LinearOpMode {
 
     // Declare OpMode Members
     private RobotHardware hardware = new RobotHardware();
-    private Odometer3W odometer;
+    private OdometerIMU2W odometer;
     //private OdometerIMU2W odometer;
     private MecanumDrive drivetrain;
     private Movement movement;
@@ -35,7 +39,7 @@ public class odometerTest extends LinearOpMode {
             telemetry.addData("X", odometer.x);
             telemetry.addData("Y", odometer.y);
             telemetry.addData("Heading", odometer.heading);
-            telemetry.addData("Horizontal", odometer.horizontal);
+            //telemetry.addData("Horizontal", odometer.horizontal);
             telemetry.update();
 
         }
@@ -45,7 +49,7 @@ public class odometerTest extends LinearOpMode {
     private void initialize(){
         hardware.hardwareMap(hardwareMap);
 
-        odometer = new Odometer3W(hardware);
+        odometer = new OdometerIMU2W(this, hardware);
         drivetrain = new MecanumDrive(this, hardware);
         timer = new Timer(this, odometer);
         movement = new Movement(this, drivetrain, odometer, timer);

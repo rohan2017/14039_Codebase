@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 public class OdometerIMU2W extends Odometer{
 
     private LinearOpMode opMode;
+    private RobotHardware hardware;
 
     /* Top-Down View of The Bottom of a Robot
 
@@ -38,12 +39,12 @@ public class OdometerIMU2W extends Odometer{
     Odometer measurements can be in whatever units you want, as long as you use the same units for every constant
     */
 
-    private double horizontalOffset = -6.24;
-    private double verticalOffset = 16.1;
+    private double horizontalOffset = 35.5/2;
+    private double verticalOffset = -7;
 
     // These variables allow you to set the direction of the encoders regardless of any reversing going on elsewhere
-    private double verticalDirection = -1;
-    private double horizontalDirection = 1;
+    private double verticalDirection = 1;
+    private double horizontalDirection = -1;
 
     // Encoder Objects
     private DcMotor verticalEncoder, horizontalEncoder;
@@ -63,20 +64,18 @@ public class OdometerIMU2W extends Odometer{
     private double[] totalRelativeMovement = {0, 0};
     private double[] totalPositionChange = {0, 0};
 
-    public OdometerIMU2W(LinearOpMode opMode, RobotHardware hardware){
+    public OdometerIMU2W(LinearOpMode opMode, RobotHardware robothardware){
 
         this.opMode = opMode;
+        this.hardware = robothardware;
+        this.horizontalEncoder = hardware.leftBack;
         this.verticalEncoder = hardware.leftFront;
-        this.horizontalEncoder = hardware.rightFront;
         this.imu = hardware.imu;
 
     }
 
     @Override
     public void initialize(){
-
-        verticalEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        horizontalEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         lastVertical = 0;
         lastHorizontal = 0;
@@ -108,14 +107,14 @@ public class OdometerIMU2W extends Odometer{
             headingRadians += headingChange;
 
             // Calculating the position-change-vector from vertical encoder
-            verticallAdjust = verticalOffset * headingChange;
+            verticallAdjust = horizontalOffset * headingChange;
             verticalExtra = verticalChange - verticallAdjust;
 
             positionChangeVertical[1] = Math.cos(headingChange) * verticalExtra;
             positionChangeVertical[0] = Math.sin(headingChange) * verticalExtra;
 
             //Calculating the position-change-vector from horizontal encoder
-            horizontalAdjust = horizontalOffset * headingChange;
+            horizontalAdjust = verticalOffset * headingChange;
             horizontalExtra = horizontalChange - horizontalAdjust;
 
             positionChangeHorizontal[0] = Math.cos(headingChange) * horizontalExtra;
