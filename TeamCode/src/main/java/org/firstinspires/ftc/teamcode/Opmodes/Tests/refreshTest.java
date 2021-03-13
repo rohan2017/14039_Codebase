@@ -55,7 +55,7 @@ public class refreshTest extends LinearOpMode {
         odometer = new OdometerIMU2W(this, hardware);
         //odometer = new OdometerKIMU2W();
         drivetrain = new MecanumDrive(this, hardware);
-        timer = new Timer(this, odometer);
+        timer = new Timer(this);
         movement = new Movement(this, drivetrain, odometer, timer);
 
         drivetrain.initialize();

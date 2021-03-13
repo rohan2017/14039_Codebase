@@ -4,9 +4,12 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
+import org.firstinspires.ftc.teamcode.HardwareSystems.Intake;
+import org.firstinspires.ftc.teamcode.HardwareSystems.Shooter;
 import org.firstinspires.ftc.teamcode.Movement.Localization.OdometerIMU2W;
 import org.firstinspires.ftc.teamcode.Movement.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Utility.RobotHardware;
+import org.firstinspires.ftc.teamcode.Utility.Timer;
 
 @TeleOp(name="Tele-Op", group="TeleOp")
 
@@ -16,14 +19,22 @@ public class teleOp extends LinearOpMode {
     private RobotHardware hardware = new RobotHardware();
     private MecanumDrive drivetrain;
     private OdometerIMU2W odometer;
+    private Shooter shooter;
+    private Intake intake;
+    private Timer time;
 
     private void initialize() {
 
         hardware.hardwareMap(hardwareMap);
+        time = new Timer(this);
         drivetrain = new MecanumDrive(this, hardware);
         odometer = new OdometerIMU2W(this, hardware);
+        shooter = new Shooter(this, hardware, time);
+        intake = new Intake(this, hardware);
         drivetrain.initialize();
         odometer.initialize();
+        shooter.initialize();
+        intake.initialize();
 
         telemetry.addData("Status", "Initialized - Welcome, Operators");
         telemetry.update();
@@ -36,9 +47,13 @@ public class teleOp extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         initialize();
         waitForStart();
+        time.start();
+        odometer.startTracking(0, 0, 0);
+        shooter.toggleShooter();
 
         while(opModeIsActive()) {
 
+            // DRIVING
             double powerScale;
             double x1, x2, y1, y2;
 
@@ -61,6 +76,12 @@ public class teleOp extends LinearOpMode {
             drivetrain.lb = (y2 + x2) * powerScale;
 
             drivetrain.update();
+
+            // SHOOTER
+            shooter.setShooterPower(gamepad1.left_trigger);
+
+            // INTAKE
+            intake.setPower(gamepad1.right_trigger);
 
         }
 

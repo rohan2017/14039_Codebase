@@ -14,7 +14,10 @@ public class RobotHardware {
     //IMU
     public BNO055IMU imu;
     //Intake Motors
-    public DcMotor intake;
+    public DcMotor intakeLeft, intakeRight;
+    //Shooter Motors
+    public DcMotor shooterLeft, shooterRight;
+    public Servo shooterAngle, shooterFeed, hopperLift;
 
     public void hardwareMap(HardwareMap hardwareMap) {
 
@@ -23,6 +26,17 @@ public class RobotHardware {
         leftFront = hardwareMap.dcMotor.get("driveFrontLeft");
         leftBack = hardwareMap.dcMotor.get("driveBackLeft");
         rightBack = hardwareMap.dcMotor.get("driveBackRight");
+
+        //Intake
+        intakeLeft = hardwareMap.dcMotor.get("intakeLeft");
+        intakeRight = hardwareMap.dcMotor.get("intakeRight");
+
+        //Shooter
+        shooterLeft = hardwareMap.dcMotor.get("shooterLeft");
+        shooterRight = hardwareMap.dcMotor.get("shooterRight");
+        shooterAngle = hardwareMap.servo.get("shooterAngle");
+        shooterFeed = hardwareMap.servo.get("shooterFeed");
+        hopperLift = hardwareMap.servo.get("hopperLift");
 
         //IMU
         imu = hardwareMap.get(BNO055IMU.class, "imu");

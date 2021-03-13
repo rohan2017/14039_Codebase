@@ -58,7 +58,7 @@ public class blueAuto extends LinearOpMode {
 
         drivetrain = new MecanumDrive(this, hardware);
         odometer = new OdometerIMU2W(this, hardware);
-        timer = new Timer(this, odometer);
+        timer = new Timer(this);
         movement = new Movement(this, drivetrain, odometer, timer);
         handler = new ActionHandler();
         movement.setActionHandler(handler);

@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.HardwareSystems.Intake;
-import org.firstinspires.ftc.teamcode.HardwareSystems.Outtake;
+import org.firstinspires.ftc.teamcode.HardwareSystems.Shooter;
 import org.firstinspires.ftc.teamcode.Movement.Localization.OdometerIMU2W;
 import org.firstinspires.ftc.teamcode.Movement.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Movement.Movement;
@@ -21,8 +21,6 @@ public class intakeTest extends LinearOpMode {
     private MecanumDrive drivetrain;
     private Movement movement;
     private Timer timer;
-    private Intake intake;
-    private Outtake outtake;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -40,15 +38,12 @@ public class intakeTest extends LinearOpMode {
 
         odometer = new OdometerIMU2W(this, hardware);
         drivetrain = new MecanumDrive(this, hardware);
-        timer = new Timer(this, odometer);
+        timer = new Timer(this);
         movement = new Movement(this, drivetrain, odometer, timer);
-        intake = new Intake(this, hardware);
-        outtake = new Outtake(this, hardware);
 
         drivetrain.initialize();
         odometer.initialize();
-        intake.initialize();
-        outtake.initialize();
+
 
         telemetry.addData("status","initialized");
         telemetry.update();

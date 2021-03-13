@@ -42,7 +42,11 @@ public class redAuto extends LinearOpMode {
         telemetry.addData("status", "running");
         telemetry.update();
 
-        movement.moveToPointPD(new RobotPoint(40,40 ,0,0),20,2.5);
+        movement.moveToPointPD(new RobotPoint(40,40 ,0,0),20,0.5);
+        movement.moveToPointPD(new RobotPoint(0,0 ,0,0),20,0.5);
+
+
+
     }
 
     private void initialize(){
@@ -62,7 +66,7 @@ public class redAuto extends LinearOpMode {
 
         drivetrain = new MecanumDrive(this, hardware);
         odometer = new OdometerIMU2W(this, hardware);
-        timer = new Timer(this, odometer);
+        timer = new Timer(this);
         movement = new Movement(this, drivetrain, odometer, timer);
         handler = new ActionHandler();
         movement.setActionHandler(handler);

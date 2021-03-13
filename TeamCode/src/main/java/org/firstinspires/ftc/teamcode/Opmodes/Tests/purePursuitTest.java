@@ -55,7 +55,7 @@ public class purePursuitTest extends LinearOpMode {
 
         odometer = new OdometerIMU2W(this, hardware);
         drivetrain = new MecanumDrive(this, hardware);
-        timer = new Timer(this, odometer);
+        timer = new Timer(this);
         movement = new Movement(this, drivetrain, odometer, timer);
 
         drivetrain.initialize();
