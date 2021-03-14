@@ -1,9 +1,10 @@
-package org.firstinspires.ftc.teamcode.Opmodes.Tests;
+package org.firstinspires.ftc.teamcode.CustomCV;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.CustomCV.BluePipeline;
 import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 
@@ -12,7 +13,7 @@ import org.openftc.easyopencv.OpenCvInternalCamera;
 public class visionTest extends LinearOpMode {
 
     private OpenCvCamera phoneCam;
-    private BluePipeline pipeline;
+    private ultimateGoal pipeline;
 
     private void initialize(){
 
@@ -24,10 +25,11 @@ public class visionTest extends LinearOpMode {
         // Vision ==================================================================================
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
 
-        phoneCam = new OpenCvInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
+        phoneCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
+
         phoneCam.openCameraDevice();
 
-        pipeline = new BluePipeline();
+        pipeline =  new ultimateGoal();
 
         phoneCam.setPipeline(pipeline);
 
@@ -49,6 +51,8 @@ public class visionTest extends LinearOpMode {
         while (opModeIsActive()) {
 
             telemetry.addData("FPS", String.format("%.2f", phoneCam.getFps()));
+            telemetry.addData("avg", pipeline.getAvg());
+            telemetry.addData("num", pipeline.getScenario());
             telemetry.update();
 
         }

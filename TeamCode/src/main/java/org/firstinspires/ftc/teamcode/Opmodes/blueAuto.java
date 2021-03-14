@@ -45,7 +45,7 @@ public class blueAuto extends LinearOpMode {
     private void initialize(){
 
         hardware.hardwareMap(hardwareMap);
-
+/*
         // CV
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
 
@@ -55,7 +55,7 @@ public class blueAuto extends LinearOpMode {
         pipeline = new BluePipeline();
         phoneCam.setPipeline(pipeline);
         phoneCam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
-
+*/
         drivetrain = new MecanumDrive(this, hardware);
         odometer = new OdometerIMU2W(this, hardware);
         timer = new Timer(this);
