@@ -88,8 +88,15 @@ public class OdometerIMU2W extends Odometer{
     public void update(){
 
         if(opMode.opModeIsActive()){
+            
             vertical = verticalEncoder.getCurrentPosition() * ticksToDistance * verticalDirection;
             horizontal = horizontalEncoder.getCurrentPosition() * ticksToDistance * horizontalDirection;
+            
+            if(firstloop) {
+                lastVertical = vertical;
+                lastHorizontal = horizontal;
+                firstloop = false;
+            }
 
             verticalChange = vertical - lastVertical;
             horizontalChange = horizontal - lastHorizontal;
