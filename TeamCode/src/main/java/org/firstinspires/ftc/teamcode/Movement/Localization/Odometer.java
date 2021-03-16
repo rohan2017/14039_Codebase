@@ -7,7 +7,7 @@ public class Odometer {
     protected double ticksPerRevolution = 8192; //How many ticks are in one revolution of the encoder
     protected double gearRatio = 1.0; //How many rotations of the wheel per 1 rotation of the encoder
     
-    private boolean firstloop;
+    protected boolean firstloop;
     public double x, y, heading;
     protected double lastX, lastY, lastHeadingRadians, headingRadians;
 
