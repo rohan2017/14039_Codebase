@@ -38,7 +38,7 @@ public class intakeTest extends LinearOpMode {
 
         odometer = new OdometerIMU2W(this, hardware);
         drivetrain = new MecanumDrive(this, hardware);
-        timer = new Timer(this);
+        timer = new Timer(this, odometer);
         movement = new Movement(this, drivetrain, odometer, timer);
 
         drivetrain.initialize();

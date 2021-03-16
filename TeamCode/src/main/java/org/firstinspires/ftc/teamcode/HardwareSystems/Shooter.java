@@ -15,7 +15,7 @@ public class Shooter {
 
     private double power;
     private boolean revving;
-    private boolean hopperPrimed;
+    public boolean hopperPrimed;
 
     private double hopperUp = 0.435;
     private double hopperDown = 0.245;
@@ -64,9 +64,9 @@ public class Shooter {
     public void feedDisk() {
         if(revving && hopperPrimed && opMode.opModeIsActive()) {
             hardware.shooterFeed.setPosition(shooterFeed); //These values need to be changed
-            time.waitMillis(80);
+            time.waitMillis(150);
             hardware.shooterFeed.setPosition(shooterPrime);
-            time.waitMillis(80);
+            time.waitMillis(200);
         }
     }
 

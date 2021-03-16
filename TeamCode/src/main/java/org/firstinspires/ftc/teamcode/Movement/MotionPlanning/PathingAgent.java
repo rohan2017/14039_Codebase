@@ -57,10 +57,7 @@ public class PathingAgent {
             targetPoint.heading = (pathPoint1.heading * distanceToOne + pathPoint2.heading * distanceToTwo) / (segmentDistance); //Linear average of point 1 and point 2 heading
             targetPoint.speed = (pathPoint1.speed * distanceToOne + pathPoint2.speed * distanceToTwo) / (segmentDistance); //Linear average of point 1 and point 2 speeds
 
-            targetPoint.intakePower = pathPoint1.intakePower;
-            targetPoint.clampPosition = pathPoint1.clampPosition;
-            targetPoint.hookPosition = pathPoint1.hookPosition;
-
+            //Pass on action variables here
         }
 
         return targetPoint;

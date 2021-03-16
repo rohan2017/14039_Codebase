@@ -26,9 +26,9 @@ public class teleOp extends LinearOpMode {
     private void initialize() {
 
         hardware.hardwareMap(hardwareMap);
-        time = new Timer(this);
         drivetrain = new MecanumDrive(this, hardware);
         odometer = new OdometerIMU2W(this, hardware);
+        time = new Timer(this, odometer);
         shooter = new Shooter(this, hardware, time);
         intake = new Intake(this, hardware);
         drivetrain.initialize();

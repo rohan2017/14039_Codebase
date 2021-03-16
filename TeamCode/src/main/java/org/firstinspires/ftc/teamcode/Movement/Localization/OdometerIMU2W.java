@@ -39,15 +39,13 @@ public class OdometerIMU2W extends Odometer{
     Odometer measurements can be in whatever units you want, as long as you use the same units for every constant
     */
 
-    private double horizontalOffset = 35.5/2;
-    private double verticalOffset = 7;
+    private double horizontalOffset = 3.25;
+    private double verticalOffset = 17.75;
 
     // These variables allow you to set the direction of the encoders regardless of any reversing going on elsewhere
-    private double verticalDirection = 1;
+    private double verticalDirection = -1;
     private double horizontalDirection = 1;
 
-    // Encoder Objects
-    private DcMotor verticalEncoder, horizontalEncoder;
     //IMU
     private BNO055IMU imu;
     // Encoder Variables
@@ -68,8 +66,6 @@ public class OdometerIMU2W extends Odometer{
 
         this.opMode = opMode;
         this.hardware = robothardware;
-        this.horizontalEncoder = hardware.intakeRight;
-        this.verticalEncoder = hardware.intakeLeft;
         this.imu = hardware.imu;
 
     }
@@ -88,9 +84,10 @@ public class OdometerIMU2W extends Odometer{
     public void update(){
 
         if(opMode.opModeIsActive()){
-            
-            vertical = verticalEncoder.getCurrentPosition() * ticksToDistance * verticalDirection;
-            horizontal = horizontalEncoder.getCurrentPosition() * ticksToDistance * horizontalDirection;
+
+            // HERE IS WHERE TO CHANGE ENCODER OBJECTS
+            vertical = hardware.intakeLeft.getCurrentPosition() * ticksToDistance * verticalDirection;
+            horizontal = hardware.intakeRight.getCurrentPosition() * ticksToDistance * horizontalDirection;
             
             if(firstloop) {
                 lastVertical = vertical;
@@ -161,7 +158,7 @@ public class OdometerIMU2W extends Odometer{
     private double getImuHeading() {
         //May need to change axis unit to work with vertical hubs
         Orientation angles = imu.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
-        double heading = (angles.firstAngle + 360) % 360;
+        double heading = (angles.firstAngle*1.0111 + 360) % 360;
         return Math.toRadians(heading);
     }
 

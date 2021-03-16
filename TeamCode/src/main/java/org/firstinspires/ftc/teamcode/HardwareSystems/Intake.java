@@ -11,6 +11,8 @@ public class Intake {
     private LinearOpMode opMode;
     private RobotHardware hardware;
 
+    private double power;
+
     public Intake(LinearOpMode opMode1, RobotHardware hardware1) {
 
         this.hardware = hardware1;
@@ -32,10 +34,17 @@ public class Intake {
     }
 
     public void setPower(double power) { //Setting a positive power should intake
+        this.power = power;
+    }
 
-        hardware.intakeLeft.setPower(power);
-        hardware.intakeRight.setPower(power);
-
+    public void update(boolean hooperUp) {
+        if(!hooperUp && opMode.opModeIsActive()) {
+            hardware.intakeLeft.setPower(power);
+            hardware.intakeRight.setPower(power);
+        }else{
+            hardware.intakeLeft.setPower(-0.1);
+            hardware.intakeRight.setPower(-0.1);
+        }
     }
 
 }

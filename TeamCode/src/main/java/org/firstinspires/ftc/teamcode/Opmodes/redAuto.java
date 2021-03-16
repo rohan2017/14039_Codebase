@@ -68,7 +68,7 @@ public class redAuto extends LinearOpMode {
 
         drivetrain = new MecanumDrive(this, hardware);
         odometer = new OdometerIMU2W(this, hardware);
-        timer = new Timer(this);
+        timer = new Timer(this, odometer);
         movement = new Movement(this, drivetrain, odometer, timer);
         handler = new ActionHandler();
         movement.setActionHandler(handler);
