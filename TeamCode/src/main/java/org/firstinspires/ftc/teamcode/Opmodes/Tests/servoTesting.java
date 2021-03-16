@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name="Servo Tester", group="Testing")
-@Disabled
 public class servoTesting extends LinearOpMode {
 
     private Servo testServo;
@@ -20,7 +19,7 @@ public class servoTesting extends LinearOpMode {
         telemetry.addData("Status", "Running");
         telemetry.update();
 
-        double r = 0;
+        double r = 0.5;
         double p = 0;
 
         while (opModeIsActive()) {
@@ -58,8 +57,8 @@ public class servoTesting extends LinearOpMode {
 
     private void initialize(){
 
-        testServo = hardwareMap.servo.get("testServo");
-        testServo2 = hardwareMap.servo.get("testServo2");
+        testServo = hardwareMap.servo.get("shooterFeed");
+        testServo2 = hardwareMap.servo.get("hopperLift");
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();

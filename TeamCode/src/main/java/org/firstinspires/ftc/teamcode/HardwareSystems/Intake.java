@@ -23,7 +23,7 @@ public class Intake {
         hardware.intakeLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         hardware.intakeRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        hardware.intakeLeft.setDirection(DcMotor.Direction.FORWARD);
+        hardware.intakeLeft.setDirection(DcMotor.Direction.REVERSE);
         hardware.intakeRight.setDirection(DcMotor.Direction.FORWARD);
 
         hardware.intakeLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);

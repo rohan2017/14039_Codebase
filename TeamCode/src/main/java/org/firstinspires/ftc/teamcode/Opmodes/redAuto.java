@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.CustomCV.BluePipeline;
 import org.firstinspires.ftc.teamcode.HardwareSystems.ActionHandler;
+import org.firstinspires.ftc.teamcode.HardwareSystems.Intake;
+import org.firstinspires.ftc.teamcode.HardwareSystems.Shooter;
 import org.firstinspires.ftc.teamcode.Movement.Localization.OdometerIMU2W;
 import org.firstinspires.ftc.teamcode.Movement.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Movement.MotionPlanning.RobotPoint;
@@ -26,6 +28,8 @@ public class redAuto extends LinearOpMode {
     private OdometerIMU2W odometer;
     private MecanumDrive drivetrain;
     private Movement movement;
+    private Shooter shooter;
+    private Intake intake;
     private ActionHandler handler;
 
     // Vision
@@ -44,8 +48,6 @@ public class redAuto extends LinearOpMode {
 
         movement.moveToPointPD(new RobotPoint(40,40 ,0,0),20,0.5);
         movement.moveToPointPD(new RobotPoint(0,0 ,0,0),20,0.5);
-
-
 
     }
 
@@ -71,8 +73,12 @@ public class redAuto extends LinearOpMode {
         handler = new ActionHandler();
         movement.setActionHandler(handler);
         movement.useActionHandler = true;
+        shooter = new Shooter(this, hardware, timer);
+        intake = new Intake(this, hardware);
 
         drivetrain.initialize();
+        odometer.initialize();
+        shooter.initialize();
         odometer.initialize();
 
         telemetry.addData("status","initialized");

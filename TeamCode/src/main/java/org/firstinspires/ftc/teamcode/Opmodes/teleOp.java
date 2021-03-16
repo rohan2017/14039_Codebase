@@ -51,6 +51,9 @@ public class teleOp extends LinearOpMode {
         odometer.startTracking(0, 0, 0);
         shooter.toggleShooter();
 
+        boolean a_released = false;
+        boolean b_released = false;
+
         while(opModeIsActive()) {
 
             // DRIVING
@@ -78,10 +81,30 @@ public class teleOp extends LinearOpMode {
             drivetrain.update();
 
             // SHOOTER
-            shooter.setShooterPower(gamepad1.left_trigger);
+            if(!gamepad2.a && a_released) {
+                shooter.toggleShooter();
+            }
+            a_released = gamepad2.a;
+
+            if(!gamepad2.b && b_released) {
+                shooter.toggleHopper();
+            }
+            b_released = gamepad2.b;
+
+            if(gamepad2.right_trigger > 0.5) {
+                shooter.feedDisk();
+            }
+
+            if(gamepad2.dpad_up) {
+                shooter.incrementPower(0.01);
+            }else if(gamepad2.dpad_down) {
+                shooter.incrementPower(-0.01);
+            }
+
+            shooter.update();
 
             // INTAKE
-            intake.setPower(gamepad1.right_trigger);
+            intake.setPower(gamepad2.left_stick_x);
 
         }
 

@@ -39,12 +39,12 @@ public class OdometerIMU2W extends Odometer{
     Odometer measurements can be in whatever units you want, as long as you use the same units for every constant
     */
 
-    private double horizontalOffset = -35.5/2;
-    private double verticalOffset = -7;
+    private double horizontalOffset = 35.5/2;
+    private double verticalOffset = 7;
 
     // These variables allow you to set the direction of the encoders regardless of any reversing going on elsewhere
     private double verticalDirection = 1;
-    private double horizontalDirection = -1;
+    private double horizontalDirection = 1;
 
     // Encoder Objects
     private DcMotor verticalEncoder, horizontalEncoder;
@@ -68,8 +68,8 @@ public class OdometerIMU2W extends Odometer{
 
         this.opMode = opMode;
         this.hardware = robothardware;
-        this.horizontalEncoder = hardware.leftBack;
-        this.verticalEncoder = hardware.leftFront;
+        this.horizontalEncoder = hardware.intakeRight;
+        this.verticalEncoder = hardware.intakeLeft;
         this.imu = hardware.imu;
 
     }

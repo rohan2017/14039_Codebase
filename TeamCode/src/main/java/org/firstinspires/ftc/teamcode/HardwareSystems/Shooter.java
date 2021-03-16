@@ -15,6 +15,14 @@ public class Shooter {
 
     private double power;
     private boolean revving;
+    private boolean hopperPrimed;
+
+    private double hopperUp = 0.435;
+    private double hopperDown = 0.245;
+
+    private double shooterPrime = 0.08;
+    private double shooterFeed = 0.35;
+
 
     public Shooter(LinearOpMode opMode, RobotHardware hardware, Timer time) {
         this.opMode = opMode;
@@ -23,12 +31,13 @@ public class Shooter {
     }
 
     public void initialize() {
-        power = 0;
+        power = 0.;
         revving = false;
+        hopperPrimed = false;
         hardware.shooterLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         hardware.shooterLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        hardware.shooterLeft.setDirection(DcMotor.Direction.REVERSE);
+        hardware.shooterLeft.setDirection(DcMotor.Direction.FORWARD);
         hardware.shooterRight.setDirection(DcMotor.Direction.FORWARD);
 
         hardware.shooterLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
@@ -36,15 +45,11 @@ public class Shooter {
     }
 
     public void toggleShooter() {
-        if(revving) {
-            revving = false;
-        }else if(!revving) {
-            revving = true;
-        }
+        revving = !revving;
     }
 
     public void autoAim(double distance) {
-
+        //TODO
     }
 
     public void setShooterAngle(double angle) {
@@ -52,7 +57,38 @@ public class Shooter {
         hardware.shooterAngle.setPosition(angle);
     }
 
-    public void setShooterPower(double power) {
+    public void setShooterPower(double input_power) {
+        power = input_power;
+    }
+
+    public void feedDisk() {
+        if(revving && hopperPrimed && opMode.opModeIsActive()) {
+            hardware.shooterFeed.setPosition(shooterFeed); //These values need to be changed
+            time.waitMillis(80);
+            hardware.shooterFeed.setPosition(shooterPrime);
+            time.waitMillis(80);
+        }
+    }
+
+    public void hopperUp() {
+        hopperPrimed = true;
+    }
+
+    public void hopperDown() {
+        hopperPrimed = false;
+    }
+
+    public void toggleHopper() {
+        hopperPrimed = !hopperPrimed;
+    }
+
+    public void update() {
+        if(hopperPrimed) {
+            hardware.hopperLift.setPosition(hopperUp);
+        }else {
+            hardware.hopperLift.setPosition(hopperDown);
+        }
+
         if(revving && opMode.opModeIsActive()) {
             hardware.shooterLeft.setPower(power);
             hardware.shooterRight.setPower(power);
@@ -62,19 +98,8 @@ public class Shooter {
         }
     }
 
-    public void feedDisk() {
-        if(revving && opMode.opModeIsActive()) {
-            hardware.shooterFeed.setPosition(0.5); //These values need to be changed
-            hardware.shooterFeed.setPosition(0.1);
-        }
-    }
-
-    public void shoot(double angle, double power) {
-
-        setShooterAngle(angle);
-        setShooterPower(power);
-        feedDisk();
-
+    public void incrementPower(double increment) {
+        power += increment;
     }
 
 }

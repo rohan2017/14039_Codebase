@@ -26,7 +26,7 @@ public class MecanumDrive extends Drivebase {
         reverseMotors();
         resetDriveEncoders();
         setRunMode("withEncoder");
-        setPowerBehavior("brake");
+        setPowerBehavior("float");
     }
 
     @Override
