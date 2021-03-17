@@ -16,6 +16,7 @@ public class Shooter {
     private double power;
     private boolean revving;
     public boolean hopperPrimed;
+    private double angle;
 
     private double hopperUp = 0.435;
     private double hopperDown = 0.245;
@@ -23,6 +24,8 @@ public class Shooter {
     private double shooterPrime = 0.08;
     private double shooterFeed = 0.35;
 
+    private double angleDown = 1.0;
+    private double angleUp = 0.5;
 
     public Shooter(LinearOpMode opMode, RobotHardware hardware, Timer time) {
         this.opMode = opMode;
@@ -37,11 +40,13 @@ public class Shooter {
         hardware.shooterLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         hardware.shooterLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        hardware.shooterLeft.setDirection(DcMotor.Direction.FORWARD);
-        hardware.shooterRight.setDirection(DcMotor.Direction.FORWARD);
+        hardware.shooterLeft.setDirection(DcMotor.Direction.REVERSE);
+        hardware.shooterRight.setDirection(DcMotor.Direction.REVERSE);
 
         hardware.shooterLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         hardware.shooterRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+        hardware.shooterAngle.setPosition(angleDown);
     }
 
     public void toggleShooter() {
@@ -54,7 +59,9 @@ public class Shooter {
 
     public void setShooterAngle(double angle) {
         //Do stuff to the servo angle here
-        hardware.shooterAngle.setPosition(angle);
+        if(angle < angleDown && angle > angleUp) {
+            this.angle = angle;
+        }
     }
 
     public void setShooterPower(double input_power) {
@@ -96,10 +103,25 @@ public class Shooter {
             hardware.shooterLeft.setPower(0);
             hardware.shooterRight.setPower(0);
         }
+
+        hardware.shooterAngle.setPosition(angle);
+
     }
 
     public void incrementPower(double increment) {
         power += increment;
+    }
+
+    public void incrementAngle(double increment) {
+        angle += increment;
+    }
+
+    public double getPower(){
+        return power;
+    }
+
+    public double getAngle() {
+        return angle;
     }
 
 }

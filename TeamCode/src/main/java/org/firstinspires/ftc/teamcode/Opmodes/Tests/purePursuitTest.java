@@ -13,7 +13,6 @@ import org.firstinspires.ftc.teamcode.Utility.Timer;
 import java.util.ArrayList;
 
 @Autonomous(name="Pure Pursuit Test", group="Testing")
-@Disabled
 public class purePursuitTest extends LinearOpMode {
 
     // Declare OpMode Members

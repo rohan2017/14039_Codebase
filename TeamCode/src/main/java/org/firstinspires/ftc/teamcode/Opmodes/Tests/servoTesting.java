@@ -57,8 +57,8 @@ public class servoTesting extends LinearOpMode {
 
     private void initialize(){
 
-        testServo = hardwareMap.servo.get("shooterFeed");
-        testServo2 = hardwareMap.servo.get("hopperLift");
+        testServo = hardwareMap.servo.get("shooterAngle");
+        testServo2 = hardwareMap.servo.get("wobbleLift");
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();

@@ -18,6 +18,8 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 
+import java.util.ArrayList;
+
 @Autonomous(name="Blue Auto", group="Auto")
 public class blueAuto extends LinearOpMode {
 
@@ -39,34 +41,32 @@ public class blueAuto extends LinearOpMode {
         initialize();
         waitForStart();
         timer.start();
+
         odometer.startTracking(0, 0, 0);
         telemetry.addData("status", "running");
         telemetry.update();
 
-        shooter.hopperDown();
-        shooter.update();
-        timer.waitMillis(500);
-        intake.setPower(0.6);
-        intake.update(shooter.hopperPrimed);
-        timer.waitMillis(1000);
-
-        movement.moveToPointPD(new RobotPoint(0,40 ,0,0),20,2);
-        timer.waitMillis(4000);
-
         shooter.hopperUp();
-        shooter.update();
-        timer.waitMillis(500);
-
+        shooter.setShooterAngle(0.99);
         shooter.toggleShooter();
-        shooter.setShooterPower(0.8);
+        shooter.setShooterPower(0.6);
         shooter.update();
         timer.waitMillis(1000);
 
+        movement.moveToPointPD(new RobotPoint(28,100 ,-6,0),20,3);
+        timer.waitMillis(1000);
+
         shooter.feedDisk();
+        timer.waitMillis(500);
+        movement.pointInDirection(0, 2);
         shooter.feedDisk();
+        timer.waitMillis(500);
+        movement.pointInDirection(6, 2);
         shooter.feedDisk();
+        timer.waitMillis(500);
         shooter.setShooterPower(0);
         shooter.update();
+
     }
 
     private void initialize(){

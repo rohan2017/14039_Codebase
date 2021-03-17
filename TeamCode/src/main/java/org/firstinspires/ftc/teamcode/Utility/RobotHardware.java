@@ -18,6 +18,7 @@ public class RobotHardware {
     //Shooter Motors
     public DcMotor shooterLeft, shooterRight;
     public Servo shooterAngle, shooterFeed, hopperLift;
+    public Servo wobbleLift, wobbleClamp;
 
     public void hardwareMap(HardwareMap hardwareMap) {
 
@@ -37,6 +38,10 @@ public class RobotHardware {
         shooterAngle = hardwareMap.servo.get("shooterAngle");
         shooterFeed = hardwareMap.servo.get("shooterFeed");
         hopperLift = hardwareMap.servo.get("hopperLift");
+
+        // Wobble
+        wobbleLift = hardwareMap.servo.get("wobbleLift");
+        wobbleClamp = hardwareMap.servo.get("wobbleClamp");
 
         //IMU
         imu = hardwareMap.get(BNO055IMU.class, "imu");

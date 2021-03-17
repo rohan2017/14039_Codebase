@@ -41,7 +41,7 @@ public class Movement {
 
     public void followPath(ArrayList<RobotPoint> path, double radius){
 
-        Proportional orient = new Proportional(0.031, 0.26);
+        Proportional orient = new Proportional(0.02, 0.25);
         RobotPoint lastPoint = path.get(path.size()-1); //Last point in the ArrayList
 
         while(opMode.opModeIsActive()){
@@ -58,7 +58,7 @@ public class Movement {
             double distanceY = lastPoint.y - odometer.y;
             double totalDistance = Math.hypot(distanceX, distanceY);
 
-            if(totalDistance < 15){ // End loop if you are within 5 cm of the last point
+            if(totalDistance < 10){ // End loop if you are within 5 cm of the last point
                 break;
             }
 
@@ -148,53 +148,6 @@ public class Movement {
 
     }
 
-    public void goToSpot(RobotPoint targetPoint, double speedFar, double speedNear, double switchThresh, double arrivedThresh) {
-
-        //GatedPid orient = new GatedPid(10, 0.3,0.009,0,0.023,0, 0.4, 0.05);
-
-        double xDist, yDist, distance, heading;
-        double targSpeed, scale;
-        double targVX, targVY, hCorrect;
-        boolean endCondition;
-
-
-        do {
-
-            xDist = targetPoint.x - odometer.x;
-            yDist = targetPoint.y - odometer.y;
-            distance = Math.hypot(xDist, yDist);
-            heading = odometer.heading;
-
-            // Verified ^
-
-            if(distance < switchThresh){
-                targSpeed = speedNear;
-            }else{
-                targSpeed = speedFar;
-            }
-
-            scale = targSpeed / distance;
-
-            targVX = xDist * scale;
-            targVY = yDist * scale;
-
-           // orient.update(targetPoint.heading, heading);
-           // hCorrect = orient.correction;
-
-            setGlobalVelocity(targVX, targVY, 0);
-
-            endCondition = (distance < arrivedThresh);
-
-            //  doActions(targetPoint);
-
-            odometer.update();
-
-        }while(!endCondition && opMode.opModeIsActive());
-
-        drivebase.freeze();
-
-    }
-
     public void moveToPointPD(RobotPoint targetPoint, double switchThresh, double arrivedThresh) {
 
         GatedPid orient = new GatedPid(15, 0.2,0.006,0,0.02,0, 0.3, 0);
@@ -239,54 +192,10 @@ public class Movement {
 
     }
 
-    public void moveToPointPD2(RobotPoint targetPoint,double switchThresh, double arrivedThresh) {
-
-        GatedPid orient = new GatedPid(2, 0.3,0.011,0,0.023,0, 1.0, 0.05);
-        double xDist, yDist, distance, heading;
-        double targSpeed, scale;
-        double targVX, targVY, hCorrect;
-        boolean endCondition;
-
-        GatedPid speedFinder = new GatedPid(switchThresh, 0.8, 0.014, 0, 0.05, 0, 0.8,0.2);
-
-        do {
-
-            xDist = targetPoint.x - odometer.x;
-            yDist = targetPoint.y - odometer.y;
-            distance = Math.hypot(xDist, yDist);
-            heading = odometer.heading;
-
-            targSpeed = Math.abs(speedFinder.correction);
-            scale = targSpeed / distance;
-
-            targVX = xDist * scale;
-            targVY = yDist * scale;
-            // Verified ^
-
-            speedFinder.update(0, distance);
-            orient.update(targetPoint.heading, heading);
-
-            hCorrect = orient.correction;
-
-
-            setGlobalVelocity(targVX, targVY, hCorrect);
-
-            endCondition = (distance < arrivedThresh) && orient.error < 1.5;
-
-            doActions(targetPoint);
-
-            odometer.update();
-
-        }while(!endCondition && opMode.opModeIsActive());
-
-        drivebase.freeze();
-
-    }
-
     public void pointInDirection(double targetHeading, double threshold){
 
-        //GatedPid orient = new GatedPid(2, 0.6, 0.3, 0,0, 0, 0.6, 0);
-        Proportional orient = new Proportional(0.2, 0.6);
+        GatedPid orient = new GatedPid(2, 0.3, 0.2, 0,0.1, 0, 0.3, 0);
+        //Proportional orient = new Proportional(0.2, 0.6);
 
         double heading, hCorrect;
 
@@ -299,160 +208,6 @@ public class Movement {
             setGlobalVelocity(0, 0, hCorrect);
 
         }while(Math.abs(orient.error) > threshold && opMode.opModeIsActive());
-
-        drivebase.freeze();
-
-    }
-
-
-    public void pointInDirection2(double targetHeading, double threshold){
-
-        //GatedPid orient = new GatedPid(2, 0.6, 0.3, 0,0, 0, 0.6, 0);
-        Proportional orient = new Proportional(0.13, 0.6);
-
-        double heading, hCorrect;
-
-        do{
-            odometer.update();
-            heading = odometer.heading;
-            orient.update(targetHeading, heading);
-            hCorrect = orient.correction;
-
-            setGlobalVelocity(0, 0, hCorrect);
-
-        }while(Math.abs(orient.error) > threshold && opMode.opModeIsActive());
-
-        drivebase.freeze();
-
-    }
-
-    public void moveToPointPDBlue(RobotPoint targetPoint, double switchThresh, double arrivedThresh) {
-
-        GatedPid orient = new GatedPid(10, 0.3,0.008,0,0.023,0, 0.4, 0.05);
-
-        double xDist, yDist, distance, heading;
-        double targSpeed, scale;
-        double targVX, targVY, hCorrect;
-        boolean endCondition;
-
-        GatedPid speedFinder = new GatedPid(switchThresh, 0.8, 0.018, 0, 0.05, 0, 0.8,0.2);
-
-        do {
-
-            xDist = targetPoint.x - odometer.x;
-            yDist = targetPoint.y - odometer.y;
-            distance = Math.hypot(xDist, yDist);
-            heading = odometer.heading;
-
-            targSpeed = Math.abs(speedFinder.correction);
-            scale = targSpeed / distance;
-
-            targVX = xDist * scale;
-            targVY = yDist * scale;
-            // Verified ^
-
-            speedFinder.update(0, distance);
-            orient.update(targetPoint.heading, heading);
-
-            hCorrect = orient.correction;
-
-            setGlobalVelocity(targVX, targVY, hCorrect);
-
-            endCondition = (distance < arrivedThresh) && orient.error < 3; //can be changed
-
-           // doActions(targetPoint);
-
-            odometer.update();
-
-        }while(!endCondition && opMode.opModeIsActive());
-
-        drivebase.freeze();
-
-    }
-
-    public void moveToPointPD2Blue(RobotPoint targetPoint,double switchThresh, double arrivedThresh) {
-
-        GatedPid orient = new GatedPid(10, 0.3,0.0085,0,0.023,0, 0.4, 0.05);
-
-        double xDist, yDist, distance, heading;
-        double targSpeed, scale;
-        double targVX, targVY, hCorrect;
-        boolean endCondition;
-
-        GatedPid speedFinder = new GatedPid(switchThresh, 1.25, 0.0245, 0, 0.06, 0, 1.25,0.1);
-
-        do {
-
-            xDist = targetPoint.x - odometer.x;
-            yDist = targetPoint.y - odometer.y;
-            distance = Math.hypot(xDist, yDist);
-            heading = odometer.heading;
-
-            targSpeed = Math.abs(speedFinder.correction);
-            scale = targSpeed / distance;
-
-            targVX = xDist * scale;
-            targVY = yDist * scale;
-            // Verified ^
-
-            speedFinder.update(0, distance);
-            orient.update(targetPoint.heading, heading);
-
-            hCorrect = orient.correction;
-
-
-            setGlobalVelocity(targVX, targVY, hCorrect);
-
-            endCondition = (distance < arrivedThresh) && orient.error < 1.5;
-
-            doActions(targetPoint);
-
-            odometer.update();
-
-        }while(!endCondition && opMode.opModeIsActive());
-
-        drivebase.freeze();
-
-    }
-
-    public void moveToPointConstantsBlue(RobotPoint targetPoint, double speedFar, double speedNear, double switchThresh, double arrivedThresh) {
-
-        GatedPid orient = new GatedPid(30, 0.3,0.009,0,0.023,0, 0.4, 0.05);
-
-        double xDist, yDist, distance, heading;
-        double targSpeed, scale;
-        double targVX, targVY, hCorrect;
-        boolean endCondition;
-
-        GatedConstant speedFinder = new GatedConstant(speedFar, speedNear, switchThresh);
-
-        do {
-
-            xDist = targetPoint.x - odometer.x;
-            yDist = targetPoint.y - odometer.y;
-            distance = Math.hypot(xDist, yDist);
-            heading = odometer.heading;
-
-            targSpeed = Math.abs(speedFinder.correction);
-            scale = targSpeed / distance;
-
-            targVX = xDist * scale;
-            targVY = yDist * scale;
-            // Verified ^
-
-            speedFinder.update(0, distance);
-            orient.update(targetPoint.heading, heading);
-            hCorrect = orient.correction;
-
-            setGlobalVelocity(targVX, targVY, hCorrect);
-
-            endCondition = (distance < arrivedThresh) && orient.error < 30;
-
-            doActions(targetPoint);
-
-            odometer.update();
-
-        }while(!endCondition && opMode.opModeIsActive());
 
         drivebase.freeze();
 
