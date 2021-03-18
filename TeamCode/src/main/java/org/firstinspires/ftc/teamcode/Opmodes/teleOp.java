@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.HardwareSystems.Shooter;
 import org.firstinspires.ftc.teamcode.HardwareSystems.Wobble;
 import org.firstinspires.ftc.teamcode.Movement.Localization.OdometerIMU2W;
 import org.firstinspires.ftc.teamcode.Movement.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Movement.MotionPlanning.RobotPoint;
 import org.firstinspires.ftc.teamcode.Movement.Movement;
 import org.firstinspires.ftc.teamcode.Utility.RobotHardware;
 import org.firstinspires.ftc.teamcode.Utility.Timer;
@@ -62,6 +63,8 @@ public class teleOp extends LinearOpMode {
         boolean a_released = false;
         boolean b_released = false;
 
+        boolean a_released_driver = false;
+
         while(opModeIsActive()) {
 
             // DRIVING
@@ -87,6 +90,11 @@ public class teleOp extends LinearOpMode {
             drivetrain.lb = (y2 + x2) * powerScale;
 
             drivetrain.update();
+
+            if(!gamepad1.a && a_released_driver) {
+                movement.pointTowardsPoint(new RobotPoint(0,330, 0, 0), 3);
+            }
+            a_released_driver = gamepad1.a;
 
             // SHOOTER
             if(!gamepad2.a && a_released) {

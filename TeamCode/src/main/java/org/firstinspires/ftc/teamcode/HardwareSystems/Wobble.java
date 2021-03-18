@@ -25,6 +25,7 @@ public class Wobble {
 
     public void initialize() {
         raised = false;
+        update();
     }
 
     public void clamp() {
@@ -52,7 +53,7 @@ public class Wobble {
                 armPosition = downPos;
             }
 
-            if(armPosition > downPos && armPosition < upPos) {
+            if(armPosition >= downPos && armPosition <= upPos) {
                 hardware.wobbleLift.setPosition(armPosition);
             }
         }

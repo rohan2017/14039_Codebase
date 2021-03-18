@@ -47,6 +47,8 @@ public class Shooter {
         hardware.shooterRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         hardware.shooterAngle.setPosition(angleDown);
+
+        update();
     }
 
     public void toggleShooter() {
@@ -60,7 +62,7 @@ public class Shooter {
     public void setShooterAngle(double angle) {
         //Do stuff to the servo angle here
         if(angle < angleDown && angle > angleUp) {
-            this.angle = angle;
+            hardware.shooterAngle.setPosition(angle);
         }
     }
 
@@ -79,22 +81,26 @@ public class Shooter {
 
     public void hopperUp() {
         hopperPrimed = true;
+        hardware.shooterFeed.setPosition(shooterPrime);
+        hardware.hopperLift.setPosition(hopperUp);
     }
 
     public void hopperDown() {
         hopperPrimed = false;
+        hardware.shooterFeed.setPosition(shooterPrime);
+        hardware.hopperLift.setPosition(hopperDown);
     }
 
     public void toggleHopper() {
+        if(hopperPrimed){
+            hopperDown();
+        }else{
+            hopperUp();
+        }
         hopperPrimed = !hopperPrimed;
     }
 
     public void update() {
-        if(hopperPrimed) {
-            hardware.hopperLift.setPosition(hopperUp);
-        }else {
-            hardware.hopperLift.setPosition(hopperDown);
-        }
 
         if(revving && opMode.opModeIsActive()) {
             hardware.shooterLeft.setPower(power);
@@ -104,7 +110,6 @@ public class Shooter {
             hardware.shooterRight.setPower(0);
         }
 
-        hardware.shooterAngle.setPosition(angle);
 
     }
 

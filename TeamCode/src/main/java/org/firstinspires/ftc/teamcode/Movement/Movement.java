@@ -180,7 +180,7 @@ public class Movement {
 
             setGlobalVelocity(targVX, targVY, hCorrect);
 
-            endCondition = (distance < arrivedThresh) && orient.error < 3; //can be changed
+            endCondition = (distance < arrivedThresh) && orient.error < 0.3; //can be changed
 
             doActions(targetPoint);
 
@@ -194,7 +194,7 @@ public class Movement {
 
     public void pointInDirection(double targetHeading, double threshold){
 
-        GatedPid orient = new GatedPid(2, 0.3, 0.2, 0,0.1, 0, 0.3, 0);
+        Proportional orient = new Proportional(0.05, 0.5);
         //Proportional orient = new Proportional(0.2, 0.6);
 
         double heading, hCorrect;
@@ -210,7 +210,26 @@ public class Movement {
         }while(Math.abs(orient.error) > threshold && opMode.opModeIsActive());
 
         drivebase.freeze();
+        timer.waitMillis(50);
 
+        if(Math.abs(odometer.heading-targetHeading) > threshold) {
+            pointInDirection(targetHeading, threshold);
+        }
+
+    }
+
+    public void pointTowardsPoint(RobotPoint targetPoint, double arrivedThresh) {
+        double targX = targetPoint.x;
+        double targY = targetPoint.y;
+
+        double xDiff = targX - odometer.x;
+        double yDiff = targY - odometer.y;
+
+        double angle = Math.atan(yDiff/xDiff);
+        double rotations = (int)odometer.heading/360;
+        double targetHeading = rotations*360 + angle;
+
+        pointInDirection(targetHeading, arrivedThresh);
     }
 
     public void deadReckon(double xVel, double yVel, double hVel, double millis){
