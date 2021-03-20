@@ -194,7 +194,7 @@ public class Movement {
 
     public void pointInDirection(double targetHeading, double threshold){
 
-        Proportional orient = new Proportional(0.05, 0.5);
+        GatedConstant orient = new GatedConstant(0.7, 0.08, 45);
         //Proportional orient = new Proportional(0.2, 0.6);
 
         double heading, hCorrect;
@@ -218,6 +218,31 @@ public class Movement {
 
     }
 
+    public void pointInDirectionPID(double targetHeading, double threshold){
+
+        GatedPid orient = new GatedPid(50, 0.5, 0.01, 0.001, 0.008, 100, 0.3, 0.05);
+
+        double heading, hCorrect;
+
+        do{
+            odometer.update();
+            heading = odometer.heading;
+            orient.update(targetHeading, heading);
+            hCorrect = orient.correction;
+
+            setGlobalVelocity(0, 0, hCorrect);
+
+        }while(Math.abs(orient.error) > threshold && opMode.opModeIsActive());
+
+        drivebase.freeze();
+        timer.waitMillis(50);
+
+        if(Math.abs(odometer.heading-targetHeading) > threshold) {
+            pointInDirectionPID(targetHeading, threshold);
+        }
+
+    }
+
     public void pointTowardsPoint(RobotPoint targetPoint, double arrivedThresh) {
         double targX = targetPoint.x;
         double targY = targetPoint.y;
@@ -225,7 +250,13 @@ public class Movement {
         double xDiff = targX - odometer.x;
         double yDiff = targY - odometer.y;
 
-        double angle = Math.atan(yDiff/xDiff);
+        double angle;
+        if(xDiff > 0) {
+            angle = Math.toDegrees(Math.atan(yDiff/xDiff))-90;
+        }else {
+            angle = Math.toDegrees(Math.atan(yDiff/xDiff))+90;
+        }
+
         double rotations = (int)odometer.heading/360;
         double targetHeading = rotations*360 + angle;
 

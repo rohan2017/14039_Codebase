@@ -14,8 +14,8 @@ public class Odometer {
     public void initialize(){}
     public void startTracking(double initialX, double initialY, double initialHeading){
 
-        x = initialX;
-        y = initialY;
+        lastX = initialX;
+        lastY = initialY;
         headingRadians = Math.toRadians(initialHeading);
         lastHeadingRadians = headingRadians;
         firstloop = true;

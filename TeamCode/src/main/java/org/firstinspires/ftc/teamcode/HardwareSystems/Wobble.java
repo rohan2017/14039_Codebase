@@ -9,13 +9,14 @@ public class Wobble {
     private LinearOpMode opMode;
     private RobotHardware hardware;
 
-    private double downPos = 0.04;
-    private double upPos = 0.75;
+    private double downPos = 0.032;
+    private double upPos = 0.73;
 
-    private double clampedPos = 0;
-    private double openPos = 0;
+    private double clampedPos = 0.116;
+    private double openPos = 0.418;
 
     private boolean raised;
+    private boolean clamped;
     private double armPosition;
 
     public Wobble(LinearOpMode opMode, RobotHardware hardware){
@@ -25,11 +26,9 @@ public class Wobble {
 
     public void initialize() {
         raised = false;
+        clamped = true;
         update();
-    }
-
-    public void clamp() {
-        hardware.wobbleLift.setPosition(0);
+        hardware.wobbleLift.setPosition(0.691); //Starting pos so it fits in 18
     }
 
     public void raiseArm() {
@@ -44,6 +43,18 @@ public class Wobble {
         raised = !raised;
     }
 
+    public void clamp() {
+        clamped = true;
+    }
+
+    public void unclamp(){
+        clamped = false;
+    }
+
+    public void toggleClamp(){
+        clamped = !clamped;
+    }
+
     public void update() {
         if(opMode.opModeIsActive()) {
 
@@ -55,6 +66,12 @@ public class Wobble {
 
             if(armPosition >= downPos && armPosition <= upPos) {
                 hardware.wobbleLift.setPosition(armPosition);
+            }
+
+            if(clamped) {
+                hardware.wobbleClamp.setPosition(clampedPos);
+            }else{
+                hardware.wobbleClamp.setPosition(openPos);
             }
         }
     }

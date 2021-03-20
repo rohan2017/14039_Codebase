@@ -17,7 +17,7 @@ import java.util.ArrayList;
 public class RingStack extends OpenCvPipeline {
 
     private int rings;
-    private double size;
+    private int average;
 
     @Override
     public Mat processFrame(Mat frame) {
@@ -25,39 +25,25 @@ public class RingStack extends OpenCvPipeline {
         Mat workingMat = frame.clone();
 
         Imgproc.cvtColor(workingMat, workingMat, Imgproc.COLOR_RGB2HSV_FULL);
-        Imgproc.GaussianBlur(workingMat, workingMat, new Size(5,5), 0);
+        Imgproc.GaussianBlur(workingMat, workingMat, new Size(15,15), 0);
 
-        Scalar black = new Scalar(0, 0, 0);
+        final Scalar black = new Scalar(0, 0, 0);
 
-        Imgproc.line(workingMat, new Point(0, 0), new Point(240, 0), black, 100);
-        Imgproc.line(workingMat, new Point(0, 320), new Point(240, 320), black, 100);
-        Imgproc.line(workingMat, new Point(240, 0), new Point(240, 320), black, 50);
-        Imgproc.line(workingMat, new Point(0, 0), new Point(0, 320), black, 50);
+        Imgproc.line(workingMat, new Point(0, 0), new Point(240, 0), black, 180);
+        Imgproc.line(workingMat, new Point(0, 320), new Point(240, 320), black, 320);
+        Imgproc.line(workingMat, new Point(240, 0), new Point(240, 320), black, 170);
+        Imgproc.line(workingMat, new Point(0, 0), new Point(0, 320), black, 230);
 
-        Scalar lower_yellow = new Scalar(15, 70, 60);
-        Scalar upper_yellow = new Scalar(40, 250, 250);
+        final Scalar lower_yellow = new Scalar(0, 0, 10);
+        final Scalar upper_yellow = new Scalar(35, 255, 255);
 
         Mat mask = new Mat(workingMat.size(), CvType.CV_8UC3);
         mask.setTo(new Scalar(0,0,0));
         Core.inRange(workingMat, lower_yellow, upper_yellow, mask);
 
-        ArrayList<Rect> yellow_rects = MathFunctions.getColorFilterBboxes(workingMat, black, black, 300, 6000);
+        average = (int)Core.mean(mask).val[0];
 
-        for(int b=0;b<yellow_rects.size();b++) {
-            Rect yellow_rect = yellow_rects.get(b);
-
-            size = yellow_rect.width * yellow_rect.height;
-
-            double centerX = yellow_rect.x + yellow_rect.width/2;
-            double centerY = yellow_rect.y + yellow_rect.height/2;
-
-            Point center = new Point((int)centerX, (int)centerY);
-            Imgproc.circle(frame, center, 10, lower_yellow, 5);
-            Imgproc.rectangle(frame, yellow_rect, upper_yellow);
-
-        }
-
-        return mask;
+        return frame;
     }
 
     public int getRings() {
@@ -66,9 +52,9 @@ public class RingStack extends OpenCvPipeline {
 
     }
 
-    public double getSize() {
+    public int getAverage() {
 
-        return size;
+        return average;
 
     }
 

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.CustomCV.BluePipeline;
@@ -20,6 +21,7 @@ import org.openftc.easyopencv.OpenCvInternalCamera;
 import java.sql.Driver;
 
 @Autonomous(name="Red Auto", group="Auto")
+@Disabled
 public class redAuto extends LinearOpMode {
 
     // Declare OpMode Members

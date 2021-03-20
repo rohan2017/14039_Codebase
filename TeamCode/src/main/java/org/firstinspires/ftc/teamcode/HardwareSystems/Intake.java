@@ -34,16 +34,18 @@ public class Intake {
     }
 
     public void setPower(double power) { //Setting a positive power should intake
-        this.power = power;
+        this.power = -power;
     }
 
-    public void update(boolean hooperUp) {
-        if(!hooperUp && opMode.opModeIsActive()) {
-            hardware.intakeLeft.setPower(power);
-            hardware.intakeRight.setPower(power);
-        }else{
-            hardware.intakeLeft.setPower(-0.1);
-            hardware.intakeRight.setPower(-0.1);
+    public void update(boolean hopperUp) {
+        if(opMode.opModeIsActive()){
+            if((!hopperUp && power <= 0) || (power >= 0)){
+                hardware.intakeLeft.setPower(power);
+                hardware.intakeRight.setPower(power);
+            } else{
+                hardware.intakeLeft.setPower(0);
+                hardware.intakeRight.setPower(0);
+            }
         }
     }
 

@@ -26,7 +26,7 @@ public class MecanumDrive extends Drivebase {
         reverseMotors();
         resetDriveEncoders();
         setRunMode("withEncoder");
-        setPowerBehavior("float");
+        setPowerBehavior("brake");
     }
 
     @Override
@@ -65,14 +65,14 @@ public class MecanumDrive extends Drivebase {
 
     }
 
-    private void setPowerBehavior(String behavior){
+    public void setPowerBehavior(String behavior){
 
         if(behavior.equals("brake")){
             hardware.rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             hardware.leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             hardware.leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             hardware.rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        }else if(behavior.equals("coast")){
+        }else if(behavior.equals("float")){
             hardware.rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
             hardware.leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
             hardware.leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);

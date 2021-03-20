@@ -28,6 +28,9 @@ public class teleOp extends LinearOpMode {
     private Wobble wobble;
     private Timer time;
 
+    private double goalX = -5;
+    private double goalY = 360;
+
     private void initialize() {
 
         hardware.hardwareMap(hardwareMap);
@@ -39,6 +42,7 @@ public class teleOp extends LinearOpMode {
         intake = new Intake(this, hardware);
         wobble = new Wobble(this, hardware);
         drivetrain.initialize();
+        drivetrain.setPowerBehavior("float");
         odometer.initialize();
         shooter.initialize();
         intake.initialize();
@@ -55,26 +59,53 @@ public class teleOp extends LinearOpMode {
         initialize();
         waitForStart();
         time.start();
-        odometer.startTracking(0, 0, 0);
-        shooter.toggleShooter();
+        odometer.startTracking(0, 170, 0);
+
         shooter.setShooterAngle(0.99);
         shooter.setShooterPower(0.4);
 
-        boolean a_released = false;
-        boolean b_released = false;
+        boolean released1 = false;
+        boolean released2 = false;
+        boolean released3 = false;
+        boolean released4 = false;
+        boolean released5 = false;
+        boolean released6 = false;
 
-        boolean a_released_driver = false;
+        double intake_multiplier = 1;
 
         while(opModeIsActive()) {
+
+            //CONTROLS
+            boolean slow_drive = gamepad1.right_bumper;
+            boolean shoot_ring = gamepad1.right_trigger > 0.5; //hold down for all 3
+            boolean toggleHopper = gamepad1.b;
+            boolean shooter_toggle_rev = gamepad1.a;
+            boolean increase_shooter_power = gamepad1.dpad_up;
+            boolean decrease_shooter_power = gamepad1.dpad_down;
+            boolean increase_shooter_angle = gamepad1.dpad_right;
+            boolean decrease_shooter_angle = gamepad1.dpad_left;
+            boolean auto_aim = gamepad1.b;
+
+            boolean powershot = gamepad1.left_stick_button && gamepad1.right_stick_button;
+
+            double intake_power_ctrl = gamepad1.left_trigger;
+            double intake_power;
+            if(intake_power_ctrl < 0.3) {
+                intake_power = 0;
+            }else{
+                intake_power = intake_power_ctrl;
+            }
+            boolean reverse_intake = gamepad1.left_bumper;
+
+            boolean clamp_unclamp_wobble = gamepad1.x;
+            boolean raise_lower_wobble = gamepad1.y;
 
             // DRIVING
             double powerScale;
             double x1, x2, y1, y2;
 
-            if(gamepad1.left_bumper) {
+            if(slow_drive) {
                 powerScale = 0.6;
-            }else if(gamepad1.right_bumper) {
-                powerScale = 0.2;
             }else {
                 powerScale = 1;
             }
@@ -90,59 +121,101 @@ public class teleOp extends LinearOpMode {
             drivetrain.lb = (y2 + x2) * powerScale;
 
             drivetrain.update();
+            if(gamepad1.dpad_up){
 
-            if(!gamepad1.a && a_released_driver) {
-                movement.pointTowardsPoint(new RobotPoint(0,330, 0, 0), 3);
             }
-            a_released_driver = gamepad1.a;
-
             // SHOOTER
-            if(!gamepad2.a && a_released) {
+            if(!auto_aim && released3) {
+                movement.pointTowardsPoint(new RobotPoint(goalX,goalY, 0, 0), 3);
+                shooter.autoAim(odometer.x, odometer.y, goalX, goalY);
+            }
+            released3 = auto_aim;
+
+            if(!shooter_toggle_rev && released1) {
                 shooter.toggleShooter();
             }
-            a_released = gamepad2.a;
+            released1 = shooter_toggle_rev;
 
-            if(!gamepad2.b && b_released) {
+            if(!toggleHopper && released2) {
                 shooter.toggleHopper();
             }
-            b_released = gamepad2.b;
+            released2 = toggleHopper;
 
-            if(gamepad2.right_trigger > 0.5) {
+            if(shoot_ring) {
                 shooter.feedDisk();
                 time.waitMillis(300);
             }
-
-            if(gamepad2.dpad_up) {
+            if (powershot){
+                powerShots();
+            }
+            if(increase_shooter_power) {
                 shooter.incrementPower(0.005);
-            }else if(gamepad2.dpad_down) {
+            }else if(decrease_shooter_power) {
                 shooter.incrementPower(-0.005);
             }
 
-            if(gamepad2.dpad_right) {
+            if(increase_shooter_angle) {
                 shooter.incrementAngle(0.005);
-            }else if(gamepad2.dpad_left) {
+            }else if(decrease_shooter_angle) {
                 shooter.incrementAngle(-0.005);
             }
-
             shooter.update();
 
+            if (gamepad1.back){
+                odometer.startTracking(-70, 0,0);
+            }
             // INTAKE
-            intake.setPower(gamepad2.left_stick_y);
+            if(!reverse_intake && released4) {
+                intake_multiplier = -intake_multiplier;
+            }
+            released4 = reverse_intake;
+
+            intake.setPower(intake_power*intake_multiplier);
             intake.update(shooter.hopperPrimed);
 
             // WOBBLE
+            if(!clamp_unclamp_wobble && released5) {
+                wobble.toggleClamp();
+            }
+            released5 = clamp_unclamp_wobble;
 
+            if(!raise_lower_wobble && released6) {
+                wobble.toggleArm();
+            }
+            released6 = raise_lower_wobble;
+            wobble.update();
 
             odometer.update();
 
             telemetry.addData("X", odometer.x);
             telemetry.addData("Y", odometer.y);
+            telemetry.addData("Distance", Math.hypot(goalX-odometer.x, goalY-odometer.y));
             telemetry.addData("Heading", odometer.heading);
             telemetry.addData("ShooterPower", shooter.getPower());
             telemetry.addData("ShooterAngle", shooter.getAngle());
+            telemetry.addData("intake power", intake_power);
+
             telemetry.update();
 
         }
+
+    }
+    public void powerShots(){
+        shooter.toggleShooter();
+        shooter.hopperUp();
+        shooter.setShooterPower(0.47);
+        shooter.update();
+        movement.moveToPointPD(new RobotPoint(43,140 ,-10,0),20,3);
+        movement.pointInDirection(-9, 0.7);
+        shooter.feedDisk();
+        time.waitMillis(100);
+        movement.pointInDirection(-3, 0.7);
+        shooter.feedDisk();
+        time.waitMillis(100);
+        movement.pointInDirection(2, 0.7);
+        shooter.feedDisk();
+        shooter.hopperDown();
+
 
     }
 

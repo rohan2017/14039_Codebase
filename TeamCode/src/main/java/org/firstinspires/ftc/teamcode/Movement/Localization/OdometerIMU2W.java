@@ -54,7 +54,7 @@ public class OdometerIMU2W extends Odometer{
     private double verticalChange, horizontalChange;
     private double ticksToDistance;
     // Math Variables
-    private double headingChange, headingImu, lastHeadingImu;
+    private double headingChange, headingImu, lastHeadingImu, fuckedHeading;
     private double verticallAdjust, verticalExtra;
     private double horizontalAdjust, horizontalExtra;
     private double[] positionChangeVertical = {0, 0}; //Position change vector from vertical encoders
@@ -69,6 +69,7 @@ public class OdometerIMU2W extends Odometer{
         this.imu = hardware.imu;
 
     }
+
 
     @Override
     public void initialize(){
@@ -92,6 +93,7 @@ public class OdometerIMU2W extends Odometer{
             if(firstloop) {
                 lastVertical = vertical;
                 lastHorizontal = horizontal;
+                lastHeadingImu = getImuHeading();
                 firstloop = false;
             }
 
@@ -102,11 +104,13 @@ public class OdometerIMU2W extends Odometer{
 
             headingChange = headingImu - lastHeadingImu;
 
-            if (headingChange < -3){ // For example 355 to 2 degrees
+            if (headingChange < -Math.PI){ // For example 355 to 2 degrees
                 headingChange = 2*Math.PI + headingChange;
-            }else if (headingChange > 3) { // For example 2 to 355 degrees
+            }else if (headingChange > Math.PI) { // For example 2 to 355 degrees
                 headingChange = -2*Math.PI + headingChange;
             }
+
+            headingChange *= 1.0126;
 
             headingRadians += headingChange;
 
@@ -155,10 +159,11 @@ public class OdometerIMU2W extends Odometer{
 
     }
 
-    private double getImuHeading() {
+    public double getImuHeading() {
         //May need to change axis unit to work with vertical hubs
         Orientation angles = imu.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
-        double heading = (angles.firstAngle*1.0111 + 360) % 360;
+        double heading = (angles.firstAngle + 360) % 360;
+        //heading = heading * 1.7; // COMPENSATE FOR BAD GYRO CALIBRATION
         return Math.toRadians(heading);
     }
 

@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.Movement.Movement;
 import org.firstinspires.ftc.teamcode.Utility.RobotHardware;
 import org.firstinspires.ftc.teamcode.Utility.Timer;
 import java.util.ArrayList;
-@Disabled
+
 @Autonomous(name="Movement Test", group="Testing")
 
 public class movementTest extends LinearOpMode {
@@ -32,13 +32,8 @@ public class movementTest extends LinearOpMode {
         telemetry.addData("status","running");
         telemetry.update();
 
-     //   movement.pointInDirection(90, 10);
-        movement.deadReckon(0,-0.5,0,1000);
-        timer.waitMillis(2000);
-        movement.deadReckon(0,0.5,0.5,1000);
-        timer.waitMillis(2000);
-        movement.deadReckon(0.5,0.5,0,1000);
-
+        movement.pointInDirection(90, 1);
+        movement.pointInDirectionPID(0, 1);
 
         drivetrain.freeze();
 

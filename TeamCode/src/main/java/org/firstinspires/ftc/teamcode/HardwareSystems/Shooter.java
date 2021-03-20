@@ -27,6 +27,10 @@ public class Shooter {
     private double angleDown = 1.0;
     private double angleUp = 0.5;
 
+    private double[] distances = {210, 230, 250, 270,290};
+    private double[] powers = {0.6, 0.6, 0.55, 0.54, 0.51 };
+    private double[] angles = {0.99, 0.99, 0.99, 0.99, 0.99};
+
     public Shooter(LinearOpMode opMode, RobotHardware hardware, Timer time) {
         this.opMode = opMode;
         this.hardware = hardware;
@@ -46,7 +50,7 @@ public class Shooter {
         hardware.shooterLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         hardware.shooterRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
-        hardware.shooterAngle.setPosition(angleDown);
+        setShooterAngle(angleUp);
 
         update();
     }
@@ -55,15 +59,33 @@ public class Shooter {
         revving = !revving;
     }
 
-    public void autoAim(double distance) {
-        //TODO
+    public void autoAim(double currentX, double currentY, double targetX, double targetY) {
+
+        int key = 0;
+        double ratio = 0;
+        double angle1=0,power1=0;
+
+        double distance = Math.hypot(Math.abs(targetX-currentX), Math.abs(targetY-currentY));
+
+        if(distance <= 290 && distance >= 210) {
+            for(int i=0;i<distances.length;i++) {
+                if(distance > distances[i]) {
+                    key = i;
+                    ratio = (distances[i+1]-distance)/(distances[i+1]-distances[i]);
+                }
+            }
+
+             angle1 = (angles[key+1] - angles[key]) * ratio + angles[key];
+             power1 = (powers[key+1] - powers[key]) * ratio + powers[key];
+        }
+
+        angle = angle1;
+        power = power1;
     }
 
     public void setShooterAngle(double angle) {
         //Do stuff to the servo angle here
-        if(angle < angleDown && angle > angleUp) {
-            hardware.shooterAngle.setPosition(angle);
-        }
+        this.angle = angle;
     }
 
     public void setShooterPower(double input_power) {
@@ -79,24 +101,21 @@ public class Shooter {
         }
     }
 
+    public void powerShots(){
+
+
+    }
+
+
     public void hopperUp() {
         hopperPrimed = true;
-        hardware.shooterFeed.setPosition(shooterPrime);
-        hardware.hopperLift.setPosition(hopperUp);
     }
 
     public void hopperDown() {
         hopperPrimed = false;
-        hardware.shooterFeed.setPosition(shooterPrime);
-        hardware.hopperLift.setPosition(hopperDown);
     }
 
     public void toggleHopper() {
-        if(hopperPrimed){
-            hopperDown();
-        }else{
-            hopperUp();
-        }
         hopperPrimed = !hopperPrimed;
     }
 
@@ -110,6 +129,17 @@ public class Shooter {
             hardware.shooterRight.setPower(0);
         }
 
+        if(hopperPrimed) {
+            hardware.shooterFeed.setPosition(shooterPrime);
+            hardware.hopperLift.setPosition(hopperUp);
+        }else {
+            hardware.shooterFeed.setPosition(shooterPrime);
+            hardware.hopperLift.setPosition(hopperDown);
+        }
+
+        if(angle <= angleDown && angle >= angleUp) {
+            hardware.shooterAngle.setPosition(angle);
+        }
 
     }
 

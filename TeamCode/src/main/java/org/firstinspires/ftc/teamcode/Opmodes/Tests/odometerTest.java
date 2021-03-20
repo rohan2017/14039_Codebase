@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Opmodes.Tests;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.Hardware;
 
 import org.firstinspires.ftc.teamcode.HardwareSystems.ActionHandler;
@@ -15,7 +16,7 @@ import org.firstinspires.ftc.teamcode.Movement.Movement;
 import org.firstinspires.ftc.teamcode.Utility.RobotHardware;
 import org.firstinspires.ftc.teamcode.Utility.Timer;
 
-@Autonomous(name="Odometer Test", group="Testing")
+@TeleOp(name="Odometer Test", group="Testing")
 
 public class odometerTest extends LinearOpMode {
 
@@ -44,7 +45,7 @@ public class odometerTest extends LinearOpMode {
             telemetry.addData("X", odometer.x);
             telemetry.addData("Y", odometer.y);
             telemetry.addData("Heading", odometer.heading);
-            //telemetry.addData("Horizontal", odometer.horizontal);
+            telemetry.addData("Raw Heading", Math.toDegrees(odometer.getImuHeading()));
             telemetry.update();
 
         }

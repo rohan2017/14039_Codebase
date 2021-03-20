@@ -1,97 +1,73 @@
+/*
+ * Copyright (c) 2020 OpenFTC Team
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 package org.firstinspires.ftc.teamcode.CustomCV;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-import org.firstinspires.ftc.teamcode.CustomCV.BluePipeline;
-import org.firstinspires.ftc.teamcode.CustomCV.EasyOpenCVExample;
-import org.firstinspires.ftc.teamcode.CustomCV.RingStack;
-import org.firstinspires.ftc.teamcode.HardwareSystems.ActionHandler;
-import org.firstinspires.ftc.teamcode.HardwareSystems.Intake;
-import org.firstinspires.ftc.teamcode.HardwareSystems.Shooter;
-import org.firstinspires.ftc.teamcode.HardwareSystems.Wobble;
-import org.firstinspires.ftc.teamcode.Movement.Localization.OdometerIMU2W;
-import org.firstinspires.ftc.teamcode.Movement.MecanumDrive;
-import org.firstinspires.ftc.teamcode.Movement.MotionPlanning.RobotPoint;
-import org.firstinspires.ftc.teamcode.Movement.Movement;
-import org.firstinspires.ftc.teamcode.Utility.RobotHardware;
-import org.firstinspires.ftc.teamcode.Utility.Timer;
 
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
 
-@TeleOp(name="Vision Test", group="TeleOp")
+//@Disabled
+@TeleOp(name="Vision Test", group="Testing")
 public class VisionTest extends LinearOpMode {
 
-    // Declare OpMode Members
-    private RobotHardware hardware = new RobotHardware();
-    private Timer timer;
-    private OdometerIMU2W odometer;
-    private MecanumDrive drivetrain;
-    private Movement movement;
-    private ActionHandler handler;
-    private Shooter shooter;
-    private Intake intake;
-    private Wobble wobble;
-    // Vision
-    private RingStack pipeline;
-    private OpenCvCamera phoneCam;
-    private int pos;
+    OpenCvCamera phoneCam;
+    RingStackPipeline pipeline;
 
     @Override
-    public void runOpMode() throws InterruptedException {
-        initialize();
-        waitForStart();
-        timer.start();
-        odometer.startTracking(0, 0, 0);
-        telemetry.addData("status", "running");
-        telemetry.update();
-
-        phoneCam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
-        while(opModeIsActive()) {
-            telemetry.addData("size",pipeline.getSize());
-            telemetry.addData("rings",pipeline.getRings());
-            telemetry.update();
-        }
-
-    }
-
-    private void initialize(){
-
-        hardware.hardwareMap(hardwareMap);
+    public void runOpMode() {
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-
         phoneCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
-        phoneCam.openCameraDevice();
-
-        pipeline = new RingStack();
+        pipeline = new RingStackPipeline();
         phoneCam.setPipeline(pipeline);
 
-        drivetrain = new MecanumDrive(this, hardware);
-        odometer = new OdometerIMU2W(this, hardware);
-        timer = new Timer(this, odometer);
-        movement = new Movement(this, drivetrain, odometer, timer);
-        handler = new ActionHandler();
-        movement.setActionHandler(handler);
-        movement.useActionHandler = true;
-        shooter = new Shooter(this, hardware, timer);
-        intake = new Intake(this, hardware);
-        wobble = new Wobble(this, hardware);
 
-        drivetrain.initialize();
-        odometer.initialize();
-        odometer.initialize();
-        shooter.initialize();
-        intake.initialize();
-        wobble.initialize();
+        // We set the viewport policy to optimized view so the preview doesn't appear 90 deg
+        // out when the RC activity is in portrait. We do our actual image processing assuming
+        // landscape orientation, though.
+        //phoneCam.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.OPTIMIZE_VIEW);
 
-        telemetry.addData("status","initialized");
-        telemetry.update();
+        phoneCam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                phoneCam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+            }
+        });
 
+        waitForStart();
+
+        while (opModeIsActive()) {
+            telemetry.addData("Analysis", pipeline.getAnalysis());
+            telemetry.addData("Position", pipeline.position);
+            telemetry.update();
+
+            // Don't burn CPU cycles busy-looping in this sample
+            sleep(50);
+        }
     }
-
 }

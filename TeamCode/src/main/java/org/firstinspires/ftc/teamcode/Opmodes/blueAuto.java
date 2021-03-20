@@ -2,10 +2,9 @@ package org.firstinspires.ftc.teamcode.Opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.robot.Robot;
 
-import org.firstinspires.ftc.teamcode.CustomCV.BluePipeline;
-import org.firstinspires.ftc.teamcode.CustomCV.EasyOpenCVExample;
-import org.firstinspires.ftc.teamcode.CustomCV.RingStack;
+import org.firstinspires.ftc.teamcode.CustomCV.RingStackPipeline;
 import org.firstinspires.ftc.teamcode.HardwareSystems.ActionHandler;
 import org.firstinspires.ftc.teamcode.HardwareSystems.Intake;
 import org.firstinspires.ftc.teamcode.HardwareSystems.Shooter;
@@ -17,17 +16,10 @@ import org.firstinspires.ftc.teamcode.Movement.Movement;
 import org.firstinspires.ftc.teamcode.Utility.RobotHardware;
 import org.firstinspires.ftc.teamcode.Utility.Timer;
 
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
-import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvInternalCamera;
-import org.openftc.easyopencv.OpenCvPipeline;
 
 @Autonomous(name="Blue Auto", group="Auto")
 public class blueAuto extends LinearOpMode {
@@ -43,73 +35,225 @@ public class blueAuto extends LinearOpMode {
     private Intake intake;
     private Wobble wobble;
     // Vision
-    private SkystoneDeterminationPipeline pipeline;
+    private RingStackPipeline pipeline;
     private OpenCvCamera phoneCam;
-    private int pos;
+    private int rings;
 
     @Override
     public void runOpMode() throws InterruptedException {
         initialize();
         waitForStart();
         timer.start();
-
-        odometer.startTracking(0, 0, 0);
         telemetry.addData("status", "running");
         telemetry.update();
-        int rings = pipeline.position;
-        //hopper in position and reving hopper
 
-        //shooter.hopperUp();
-        //shooter.setShooterAngle(0.99);
-
-        shooter.toggleShooter();
-        shooter.setShooterPower(0.52);
-        shooter.update();
-
-        timer.waitMillis(1000);
-
-        //move to first point and shoot powershot
-
-        movement.moveToPointPD(new RobotPoint(43,140 ,-10,0),20,3);
-        timer.waitMillis(1000);
-        shooter.feedDisk();
-        timer.waitMillis(500);
-
-        //shoot first disk into goal
-        //movement.moveToPointPD(new RobotPoint(40,144 ,-7,0),20,10);
-        movement.pointInDirection(-5, 0.3);
-        shooter.feedDisk();
-        timer.waitMillis(500);
-
-        //shoot seccond disk into goal
-        //movement.moveToPointPD(new RobotPoint(40,144 ,0,0),20,10);
-        movement.pointInDirection(0, 0.3);
-        shooter.feedDisk();
-        timer.waitMillis(500);
-
-        //derev shooter
-
-        shooter.setShooterPower(0);
-        shooter.update();
-
-        if (pos ==0){
-            movement.moveToPointPD(new RobotPoint(-25,203 ,0,0),20,3);
-            wobble.lowerArm();
-            wobble.update();
-            timer.waitMillis(1000);
-        } else if(pos == 1){
-            movement.moveToPointPD(new RobotPoint(29,260 ,0,0),20,3);
-            wobble.lowerArm();
-            wobble.update();
-            timer.waitMillis(1000);
-        } else {
-            movement.moveToPointPD(new RobotPoint(-30,305 ,-5,0),20,3);
-            wobble.lowerArm();
-            wobble.update();
-            timer.waitMillis(1000);
+        if(pipeline.position == RingStackPipeline.RingPosition.FOUR) {
+            rings = 4;
+        }else if(pipeline.position == RingStackPipeline.RingPosition.ONE) {
+            rings = 1;
+        }else {
+            rings = 0;
         }
 
-        movement.pointInDirection(-180,1);
+        telemetry.addData("avg", pipeline.position);
+        telemetry.addData("block", pipeline.getAnalysis());
+        telemetry.update();
+
+        phoneCam.stopStreaming();
+
+        odometer.startTracking(0, 0, 0);
+
+        // Raise wobble
+        wobble.raiseArm();
+        wobble.update();
+
+        // Hopper in shooting position and start revving shooter
+        shooter.hopperUp();
+        shooter.setShooterAngle(0.99);
+        shooter.toggleShooter();
+        shooter.setShooterPower(0.47);
+        shooter.update();
+
+        movement.moveToPointPD(new RobotPoint(5,50 ,0,0),20,20);
+
+        // Move to first point and shoot powershot
+        movement.moveToPointPD(new RobotPoint(43,140 ,-10,0),20,3);
+        movement.pointInDirection(-9, 0.7);
+        shooter.feedDisk();
+        timer.waitMillis(100);
+        movement.pointInDirection(-3, 0.7);
+        shooter.feedDisk();
+        timer.waitMillis(100);
+        movement.pointInDirection(2, 0.7);
+        shooter.feedDisk();
+
+        //rev-down shooter and run intake
+        shooter.setShooterPower(0);
+        shooter.hopperDown();
+        shooter.update();
+
+        if (rings == 0){
+            movement.moveToPointPD(new RobotPoint(-2,195 ,0,0),20,5);
+            timer.waitMillis(300);
+            wobble.lowerArm();
+            timer.waitMillis(500);
+            wobble.unclamp();
+            timer.waitMillis(300);
+            wobble.update();
+            timer.waitMillis(300);
+            wobble.raiseArm();
+            wobble.update();
+        } else if(rings == 1){
+            movement.moveToPointPD(new RobotPoint(53,260 ,0,0),20,5);
+            timer.waitMillis(300);
+            wobble.lowerArm();
+            timer.waitMillis(500);
+            wobble.unclamp();
+            timer.waitMillis(300);
+            wobble.update();
+            timer.waitMillis(300);
+            wobble.raiseArm();
+            wobble.update();
+        } else {
+            movement.moveToPointPD(new RobotPoint(-8,310 ,-5,0),20,5);
+            timer.waitMillis(300);
+            wobble.lowerArm();
+            timer.waitMillis(500);
+            wobble.unclamp();
+            timer.waitMillis(300);
+            wobble.update();
+            timer.waitMillis(300);
+            wobble.raiseArm();
+            wobble.update();
+        }
+/*
+        movement.pointInDirection(-180,2);
+
+        if (rings == 4) {
+            intake.setPower(0.8);
+            intake.update(false);
+            shooter.hopperDown();
+            shooter.update();
+
+
+            movement.moveToPointPD(new RobotPoint(-40, 115, -180, 0), 20, 12);
+            //intake.setPower(-0.5);
+            //intake.update(false);
+            //movement.deadReckon(0, -0.7, 0, 50);
+
+
+
+            movement.deadReckon(0, -0.4, 0, 1000);
+
+            movement.pointInDirection(-360, 3);
+
+            movement.moveToPointPD(new RobotPoint(0, 51, -360, 0), 20, 6);
+            wobble.lowerArm();
+            wobble.update();
+            movement.deadReckon(-0.25, 0, 0, 500);
+            wobble.clamp();
+            wobble.update();
+            timer.waitMillis(300);
+            wobble.raiseArm();
+            timer.waitMillis(300);
+
+            movement.moveToPointPD(new RobotPoint(-5, 155, -360, 0), 20, 6);
+
+            shooter.hopperUp();
+            shooter.setShooterAngle(0.8);
+            shooter.setShooterPower(0.6);
+            shooter.update();
+
+            timer.waitMillis(800);
+            shooter.feedDisk();
+            timer.waitMillis(300);
+            shooter.feedDisk();
+            timer.waitMillis(300);
+            shooter.feedDisk();
+            timer.waitMillis(300);
+
+        }else if(rings == 1) {
+            shooter.hopperDown();
+            shooter.update();
+
+            intake.setPower(0.6);
+            intake.update(false);
+            movement.moveToPointPD(new RobotPoint(-40, 109, -180, 0), 20, 11);
+            movement.deadReckon(0, -0.5, 0, 700);
+            timer.waitMillis(300);
+
+            //movement.pointInDirection(-360, 10);
+
+            movement.moveToPointPD(new RobotPoint(0, 55, -360, 0), 20, 5);
+            wobble.lowerArm();
+            wobble.update();
+            movement.deadReckon(-0.3, 0, 0, 300);
+            wobble.clamp();
+            wobble.update();
+            timer.waitMillis(300);
+            wobble.raiseArm();
+            timer.waitMillis(300);
+
+            movement.moveToPointPD(new RobotPoint(-5, 155, -360, 0), 20, 5);
+
+            shooter.hopperUp();
+            shooter.setShooterAngle(0.8);
+            shooter.setShooterPower(0.6);
+            shooter.update();
+
+            timer.waitMillis(800);
+            shooter.feedDisk();
+            timer.waitMillis(300);
+
+        }else {
+
+            //movement.pointInDirection(-360, 10);
+
+            movement.moveToPointPD(new RobotPoint(0, 55, -360, 0), 20, 5);
+            wobble.lowerArm();
+            wobble.update();
+            movement.deadReckon(-0.2, 0, 0, 300);
+            wobble.clamp();
+            wobble.update();
+            timer.waitMillis(300);
+            wobble.raiseArm();
+            timer.waitMillis(300);
+
+        }
+
+        if (rings == 0){
+            wobble.raiseArm();
+            wobble.update();
+            movement.moveToPointPD(new RobotPoint(-2,195 ,-360,0),20,7);
+            wobble.lowerArm();
+            wobble.unclamp();
+            wobble.update();
+            timer.waitMillis(300);
+            wobble.raiseArm();
+            wobble.update();
+        } else if(rings == 1){
+            wobble.raiseArm();
+            wobble.update();
+            movement.moveToPointPD(new RobotPoint(53,260 ,-360,0),20,7);
+            wobble.lowerArm();
+            wobble.unclamp();
+            wobble.update();
+            timer.waitMillis(300);
+            wobble.raiseArm();
+            wobble.update();
+        } else {
+            wobble.raiseArm();
+            wobble.update();
+            movement.moveToPointPD(new RobotPoint(-8,304 ,-360,0),20,7);
+            wobble.lowerArm();
+            wobble.unclamp();
+            wobble.update();
+            timer.waitMillis(300);
+            wobble.raiseArm();
+            wobble.update();
+        }
+*/
+        movement.moveToPointPD(new RobotPoint(0, 170, 0, 0), 20, 0.5);
 
     }
 
@@ -122,7 +266,8 @@ public class blueAuto extends LinearOpMode {
         phoneCam = OpenCvCameraFactory.getInstance().createInternalCamera(OpenCvInternalCamera.CameraDirection.BACK, cameraMonitorViewId);
         phoneCam.openCameraDevice();
 
-        pipeline = new SkystoneDeterminationPipeline();
+        pipeline = new RingStackPipeline();
+        pipeline.setLinearOpMode(this);
         phoneCam.setPipeline(pipeline);
         phoneCam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
 
@@ -143,123 +288,10 @@ public class blueAuto extends LinearOpMode {
         shooter.initialize();
         intake.initialize();
         wobble.initialize();
-
-        shooter.hopperUp();
-        shooter.setShooterAngle(0.99);
-
-        wobble.raiseArm();
-        wobble.update();
-
-        shooter.update();
+        hardware.wobbleClamp.setPosition(0.116);
 
         telemetry.addData("status","initialized");
-        telemetry.addData("avg",pipeline.position);
-        telemetry.addData("block",pipeline.getAnalysis());
         telemetry.update();
-
-    }
-
-    public static class SkystoneDeterminationPipeline extends OpenCvPipeline {
-
-        /*
-         * An enum to define the skystone position
-         */
-        public enum RingPosition {
-            FOUR,
-            ONE,
-            NONE
-        }
-
-        /*
-         * Some color constants
-         */
-        static final Scalar BLUE = new Scalar(0, 0, 255);
-        static final Scalar GREEN = new Scalar(0, 255, 0);
-
-        /*
-         * The core values which define the location and size of the sample regions
-         */
-        static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(130, 102);
-
-        static final int REGION_WIDTH = 40;
-        static final int REGION_HEIGHT = 45;
-
-        final int FOUR_RING_THRESHOLD = 140;
-        final int ONE_RING_THRESHOLD = 129;
-
-        Point region1_pointA = new Point(
-                REGION1_TOPLEFT_ANCHOR_POINT.x,
-                REGION1_TOPLEFT_ANCHOR_POINT.y);
-        Point region1_pointB = new Point(
-                REGION1_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH,
-                REGION1_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
-
-        /*
-         * Working variables
-         */
-        Mat region1_Cb;
-        Mat YCrCb = new Mat();
-        Mat Cb = new Mat();
-        int avg1;
-
-        // Volatile since accessed by OpMode thread w/o synchronization
-        private volatile EasyOpenCVExample.SkystoneDeterminationPipeline.RingPosition position = EasyOpenCVExample.SkystoneDeterminationPipeline.RingPosition.FOUR;
-
-        /*
-         * This function takes the RGB frame, converts to YCrCb,
-         * and extracts the Cb channel to the 'Cb' variable
-         */
-        void inputToCb (Mat input)
-        {
-            Imgproc.cvtColor(input, YCrCb, Imgproc.COLOR_RGB2YCrCb);
-            Core.extractChannel(YCrCb, Cb, 1);
-        }
-
-        @Override
-        public void init (Mat firstFrame)
-        {
-            inputToCb(firstFrame);
-
-            region1_Cb = Cb.submat(new Rect(region1_pointA, region1_pointB));
-        }
-
-        @Override
-        public Mat processFrame (Mat input)
-        {
-            inputToCb(input);
-
-            avg1 = (int) Core.mean(region1_Cb).val[0];
-
-            Imgproc.rectangle(
-                    input, // Buffer to draw on
-                    region1_pointA, // First point which defines the rectangle
-                    region1_pointB, // Second point which defines the rectangle
-                    BLUE, // The color the rectangle is drawn in
-                    2); // Thickness of the rectangle lines
-
-            position = EasyOpenCVExample.SkystoneDeterminationPipeline.RingPosition.FOUR; // Record our analysis
-            if (avg1 > FOUR_RING_THRESHOLD) {
-                position = EasyOpenCVExample.SkystoneDeterminationPipeline.RingPosition.FOUR;
-            } else if (avg1 > ONE_RING_THRESHOLD) {
-                position = EasyOpenCVExample.SkystoneDeterminationPipeline.RingPosition.ONE;
-            } else {
-                position = EasyOpenCVExample.SkystoneDeterminationPipeline.RingPosition.NONE;
-            }
-
-            Imgproc.rectangle(
-                    input, // Buffer to draw on
-                    region1_pointA, // First point which defines the rectangle
-                    region1_pointB, // Second point which defines the rectangle
-                    GREEN, // The color the rectangle is drawn in
-                    -1); // Negative thickness means solid fill
-
-            return input;
-        }
-
-        public int getAnalysis ()
-        {
-            return avg1;
-        }
 
     }
 
